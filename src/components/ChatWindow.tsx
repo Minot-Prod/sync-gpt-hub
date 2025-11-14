@@ -121,25 +121,31 @@ export default function ChatWindow({
     }
   }
 
+  const placeholder =
+    config?.name != null
+      ? `Écris ici ton message pour ${config.name}…`
+      : "Écris ici ton message pour l’agent…";
+
   return (
     <div className="space-y-4">
-      <header className="space-y-2">
+      {/* EN-TÊTE AGENT */}
+      <header className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xl">
+          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xl">
             {config?.avatarSrc ? (
               <Image
                 src={config.avatarSrc}
                 alt={config.name}
-                width={40}
-                height={40}
-                className="h-10 w-10 object-cover"
+                width={48}
+                height={48}
+                className="h-12 w-12 object-cover"
               />
             ) : (
               <span>{config?.avatar ?? "🤖"}</span>
             )}
           </div>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">
+            <h1 className="text-lg font-semibold tracking-tight">
               {headingTitle}
             </h1>
             {config?.tagline && (
@@ -152,8 +158,9 @@ export default function ChatWindow({
         </div>
 
         {initialSystemHint && (
-          <p className="mt-1 text-xs text-slate-400">
-            <span className="font-semibold">Conseil :</span> {initialSystemHint}
+          <p className="mt-2 rounded-lg bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
+            <span className="font-semibold">Conseil : </span>
+            {initialSystemHint}
           </p>
         )}
 
@@ -178,70 +185,95 @@ export default function ChatWindow({
         )}
       </header>
 
-      <div className="flex flex-col gap-3">
-        <div className="min-h-[260px] max-h-[460px] overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/80 p-4 text-sm">
-          {messages.length === 0 && (
-            <p className="text-xs text-slate-500">
-              Tu peux parler à l’agent comme à un collègue. Clique sur un
-              exemple ci-dessus ou utilise le micro pour lui expliquer ta
-              situation.
-            </p>
-          )}
+      {/* ZONE DE DISCUSSION + INPUT */}
+      <div className="space-y-3">
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 shadow-lg">
+          <div className="mb-3 flex items-center justify-between text-[0.7rem] text-slate-400">
+            <span>
+              Conversation avec {config?.name ?? "l’agent"} – les réponses
+              s’affichent ici.
+            </span>
+            <span className="rounded-full border border-slate-700 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-slate-300">
+              Zone de discussion
+            </span>
+          </div>
 
-          {messages.map((m, idx) => (
-            <div
-              key={idx}
-              className={`mb-2 flex ${
-                m.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
+          <div className="min-h-[220px] max-h-[420px] space-y-2 overflow-y-auto pr-1">
+            {messages.length === 0 && (
+              <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-950/60 px-4 py-8 text-center text-xs text-slate-500">
+                <p>
+                  Commence la discussion en écrivant ton message ci-dessous
+                  ou en utilisant le bouton 🎙 pour parler à{" "}
+                  {config?.name ?? "l’agent"}.
+                </p>
+              </div>
+            )}
+
+            {messages.map((m, idx) => (
               <div
-                className={`max-w-[80%] whitespace-pre-wrap rounded-lg px-3 py-2 text-xs ${
-                  m.role === "user"
-                    ? "bg-blue-600 text-slate-50"
-                    : "bg-slate-800 text-slate-100"
+                key={idx}
+                className={`flex ${
+                  m.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                {m.content}
+                <div
+                  className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-xs ${
+                    m.role === "user"
+                      ? "bg-cyan-500 text-slate-950"
+                      : "bg-slate-800 text-slate-100"
+                  }`}
+                >
+                  {m.content}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {loading && (
-            <p className="mt-1 text-xs text-slate-400">L’agent réfléchit…</p>
-          )}
+            {loading && (
+              <p className="mt-1 text-xs text-slate-400">
+                L’agent réfléchit…
+              </p>
+            )}
 
-          <div ref={bottomRef} />
+            <div ref={bottomRef} />
+          </div>
         </div>
 
-        <form onSubmit={handleSend} className="flex gap-2">
-          <button
-            type="button"
-            onClick={toggleVoiceInput}
-            className={`flex items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold ${
-              listening
-                ? "bg-red-500 text-slate-900"
-                : "bg-slate-800 text-slate-100"
-            }`}
-          >
-            {listening ? "🎙️ Stop" : "🎙️ Parler"}
-          </button>
+        {/* BARRE D’ENTRÉE MODERNE */}
+        <form onSubmit={handleSend} className="space-y-1">
+          <div className="flex gap-2 rounded-2xl border border-slate-800 bg-slate-950 px-3 py-2 shadow-md">
+            <button
+              type="button"
+              onClick={toggleVoiceInput}
+              className={`mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold transition ${
+                listening
+                  ? "bg-red-500 text-slate-950"
+                  : "bg-slate-800 text-slate-100 hover:bg-slate-700"
+              }`}
+            >
+              🎙
+            </button>
 
-          <input
-            type="text"
-            className="flex-1 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400"
-            placeholder="Écris ta demande… ou clique sur 🎙️ pour parler."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
+            <input
+              type="text"
+              className="flex-1 rounded-xl bg-transparent px-2 text-xs text-slate-100 outline-none placeholder:text-slate-500"
+              placeholder={placeholder}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-lg bg-cyan-400 px-4 py-2 text-xs font-semibold text-slate-900 disabled:cursor-not-allowed disabled:bg-slate-700"
-          >
-            Envoyer
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex h-9 items-center justify-center rounded-xl bg-cyan-400 px-4 text-xs font-semibold text-slate-900 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-700"
+            >
+              Envoyer
+            </button>
+          </div>
+
+          <p className="text-[0.7rem] text-slate-500">
+            Entrée pour envoyer · <span className="font-semibold">🎙</span> pour
+            dicter ton message.
+          </p>
         </form>
       </div>
     </div>
