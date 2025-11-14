@@ -123,25 +123,31 @@ export default function ChatWindow({
     }
   }
 
+  const placeholder =
+    config?.name != null
+      ? `Écris ici ton message pour ${config.name}…`
+      : "Écris ici ton message pour l’agent…";
+
   return (
     <div className="space-y-4">
-      <header className="space-y-2">
+      {/* EN-TÊTE AGENT */}
+      <header className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xl">
+          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xl">
             {config?.avatarSrc ? (
               <Image
                 src={config.avatarSrc}
                 alt={config.name}
-                width={40}
-                height={40}
-                className="h-10 w-10 object-cover"
+                width={48}
+                height={48}
+                className="h-12 w-12 object-cover"
               />
             ) : (
               <span>{config?.avatar ?? "🤖"}</span>
             )}
           </div>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">
+            <h1 className="text-lg font-semibold tracking-tight">
               {headingTitle}
             </h1>
             {config?.tagline && (
@@ -154,8 +160,9 @@ export default function ChatWindow({
         </div>
 
         {initialSystemHint && (
-          <p className="mt-1 text-xs text-slate-400">
-            <span className="font-semibold">Conseil :</span> {initialSystemHint}
+          <p className="mt-2 rounded-lg bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
+            <span className="font-semibold">Conseil : </span>
+            {initialSystemHint}
           </p>
         )}
 
@@ -180,76 +187,90 @@ export default function ChatWindow({
         )}
       </header>
 
-      <div className="flex flex-col gap-3">
-        <div className="min-h-[260px] max-h-[460px] overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950/90 p-4 text-sm shadow-inner">
-          {messages.length === 0 && (
-            <p className="text-xs text-slate-500">
-              Tu peux parler à l’agent comme à un collègue. Clique sur un
-              exemple ci-dessus ou utilise le micro pour lui expliquer ta
-              situation.
-            </p>
-          )}
+      {/* ZONE DE DISCUSSION + INPUT */}
+      <div className="space-y-3">
+        <div className="rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-950/90 to-slate-950/70 p-4 shadow-lg">
+          <div className="mb-3 flex items-center justify-between text-[0.7rem] text-slate-400">
+            <span>
+              Conversation avec {config?.name ?? "l’agent"} – les messages
+              s’affichent ici.
+            </span>
+            <span className="rounded-full border border-slate-700 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-slate-300">
+              Zone de discussion
+            </span>
+          </div>
 
-          {messages.map((m, idx) => {
-            const isUser = m.role === "user";
-            const showAgentAvatar = !isUser;
+          <div className="min-h-[220px] max-h-[420px] space-y-2 overflow-y-auto pr-1">
+            {messages.length === 0 && (
+              <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-950/60 px-4 py-8 text-center text-xs text-slate-500">
+                <p>
+                  Commence la discussion en écrivant ton message ci-dessous
+                  ou en utilisant le bouton 🎙 pour parler à{" "}
+                  {config?.name ?? "l’agent"}.
+                </p>
+              </div>
+            )}
 
-            return (
-              <div
-                key={idx}
-                className={`mb-3 flex ${
-                  isUser ? "justify-end" : "justify-start"
-                }`}
-              >
+            {messages.map((m, idx) => {
+              const isUser = m.role === "user";
+              const showAgentAvatar = !isUser;
+
+              return (
                 <div
-                  className={`flex max-w-[80%] items-start gap-3 ${
-                    isUser ? "flex-row-reverse" : "flex-row"
+                  key={idx}
+                  className={`mb-3 flex ${
+                    isUser ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {showAgentAvatar && (
-                    <div className="mt-1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xs">
-                      {config?.avatarSrc ? (
-                        <Image
-                          src={config.avatarSrc}
-                          alt={config?.name}
-                          width={32}
-                          height={32}
-                          className="h-8 w-8 object-cover"
-                        />
-                      ) : (
-                        <span>{config?.avatar ?? "🤖"}</span>
-                      )}
-                    </div>
-                  )}
-
                   <div
-                    className={`whitespace-pre-wrap rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-md ${
-                      isUser
-                        ? "bg-cyan-400 text-slate-900"
-                        : "bg-slate-800 text-slate-100 border border-slate-700"
+                    className={`flex max-w-[80%] items-start gap-3 ${
+                      isUser ? "flex-row-reverse" : "flex-row"
                     }`}
                   >
-                    {isUser ? (
-                      <span className="break-words">{m.content}</span>
-                    ) : (
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        className="prose prose-invert prose-xs max-w-none break-words"
-                      >
-                        {m.content}
-                      </ReactMarkdown>
+                    {showAgentAvatar && (
+                      <div className="mt-1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xs">
+                        {config?.avatarSrc ? (
+                          <Image
+                            src={config.avatarSrc}
+                            alt={config?.name}
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 object-cover"
+                          />
+                        ) : (
+                          <span>{config?.avatar ?? "🤖"}</span>
+                        )}
+                      </div>
                     )}
+
+                    <div
+                      className={`whitespace-pre-wrap rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-md ${
+                        isUser
+                          ? "bg-cyan-400 text-slate-900"
+                          : "bg-slate-800 text-slate-100 border border-slate-700"
+                      }`}
+                    >
+                      {isUser ? (
+                        <span className="break-words">{m.content}</span>
+                      ) : (
+                        <div className="prose prose-invert prose-xs max-w-none break-words">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {m.content}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
 
-          {loading && (
-            <p className="mt-1 text-xs text-slate-400">L’agent réfléchit…</p>
-          )}
+            {loading && (
+              <p className="mt-1 text-xs text-slate-400">L’agent réfléchit…</p>
+            )}
 
-          <div ref={bottomRef} />
+            <div ref={bottomRef} />
+          </div>
         </div>
 
         <form onSubmit={handleSend} className="flex flex-col gap-2">
@@ -269,7 +290,7 @@ export default function ChatWindow({
             <input
               type="text"
               className="flex-1 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400"
-              placeholder="Écris ta demande… ou clique sur 🎙️ pour parler."
+              placeholder={placeholder}
               value={input}
               onChange={(e) => setInput(e.target.value)}
             />
