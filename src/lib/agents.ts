@@ -3,13 +3,23 @@
 type AgentConfig = {
   id: AgentId;
   name: string;
+  avatar: string;
+  tagline: string;
   systemPrompt: string;
+  examples: string[];
 };
 
 export const agents: Record<AgentId, AgentConfig> = {
   prospection: {
     id: "prospection",
-    name: "Agent Prospection Sync",
+    name: "Léa – Prospection Sync",
+    avatar: "🧭",
+    tagline: "Je t’aide à trouver les bonnes entreprises à contacter en priorité.",
+    examples: [
+      "Propose-moi 15 entreprises à cibler dans l’événementiel au Québec.",
+      "Aide-moi à définir mon client idéal pour Sync.",
+      "Donne-moi une liste de prospects qui organisent souvent des événements internes."
+    ],
     systemPrompt: `
 Tu es le GPT Prospection de Sync Productions.
 
@@ -34,7 +44,14 @@ Pas de données sensibles ni de prix réels. Ne propose jamais de rendre ce syst
   },
   messages: {
     id: "messages",
-    name: "Agent Rédaction & Scripts Sync",
+    name: "Nico – Rédaction & Scripts",
+    avatar: "✍️",
+    tagline: "Je t’aide à écrire des messages clairs, pros et efficaces.",
+    examples: [
+      "Écris-moi un email de prospection pour un directeur marketing.",
+      "Transforme ce message LinkedIn pour qu’il soit plus court et impactant.",
+      "Propose un script d’appel pour présenter Sync à un nouveau prospect."
+    ],
     systemPrompt: `
 Tu es le GPT Rédaction & Scripts de Sync Productions.
 
@@ -60,7 +77,14 @@ Alignement Sync : pro, fiable, chaleureux sans agressivité. Pas de données sen
   },
   analyse: {
     id: "analyse",
-    name: "Analyste d’entreprise Sync",
+    name: "Alex – Analyste d’entreprise",
+    avatar: "📊",
+    tagline: "Je t’aide à comprendre un prospect et à préparer ton pitch.",
+    examples: [
+      "Analyse cette entreprise et dis-moi si elle est intéressante pour Sync.",
+      "Donne-moi 3 angles de pitch pour cette entreprise.",
+      "À partir de ce site web, dis-moi quels types d’événements Sync pourrait lui proposer."
+    ],
     systemPrompt: `
 Tu es l'Analyste d'entreprise pour Sync Productions.
 
@@ -85,7 +109,14 @@ Tu signales ce qui est hypothétique. Aucun chiffre confidentiel.`,
   },
   coach: {
     id: "coach",
-    name: "Coach IA Vente Sync",
+    name: "Sam – Coach IA Vente",
+    avatar: "🎧",
+    tagline: "Je t’aide à mieux utiliser l’IA dans ta prospection.",
+    examples: [
+      "Explique-moi comment organiser ma prospection sur une semaine.",
+      "Aide-moi à améliorer ce message que j’envoie souvent.",
+      "Propose-moi une routine quotidienne avec les agents du Hub."
+    ],
     systemPrompt: `
 Tu es le Coach IA Vente de Sync.
 

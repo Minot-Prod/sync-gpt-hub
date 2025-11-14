@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { AgentId, ChatMessage } from "@/lib/types";
+import { getAgentConfig } from "@/lib/agents";
 
 type Props = {
   agent: AgentId;
@@ -19,7 +20,12 @@ export default function ChatWindow({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [listening, setListening] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const recognitionRef = useRef<any>(null);
+
+  const config = getAgentConfig(agent);
+  const headingTitle = config?.name || title;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,17 +70,100 @@ export default function ChatWindow({
     }
   }
 
+  function handleExampleClick(example: string) {
+    setInput(example);
+  }
+
+  function toggleVoiceInput() {
+    if (typeof window === "undefined") return;
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert(
+        "La dictée vocale n’est pas supportée par ce navigateur. Essaie avec Chrome ou Edge."
+      );
+      return;
+    }
+
+    if (!listening) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "fr-FR";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results?.[0]?.[0]?.transcript;
+        if (transcript) {
+          setInput((prev) => (prev ? prev + " " + transcript : transcript));
+        }
+      };
+
+      recognition.onend = () => {
+        setListening(false);
+      };
+
+      recognition.onerror = () => {
+        setListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      setListening(true);
+      recognition.start();
+    } else {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setListening(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-        {subtitle && (
-          <p className="mt-1 text-sm text-slate-300">{subtitle}</p>
-        )}
+      <header className="space-y-2">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-xl">
+            {config?.avatar ?? "🤖"}
+          </div>
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight">
+              {headingTitle}
+            </h1>
+            {config?.tagline && (
+              <p className="text-xs text-slate-300">{config.tagline}</p>
+            )}
+            {subtitle && (
+              <p className="text-xs text-slate-400">{subtitle}</p>
+            )}
+          </div>
+        </div>
+
         {initialSystemHint && (
           <p className="mt-1 text-xs text-slate-400">
             <span className="font-semibold">Conseil :</span> {initialSystemHint}
           </p>
+        )}
+
+        {config?.examples?.length > 0 && (
+          <div className="mt-2 space-y-1">
+            <p className="text-[0.7rem] uppercase tracking-[0.16em] text-slate-500">
+              Exemples de questions
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {config.examples.map((ex, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleExampleClick(ex)}
+                  className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-[0.7rem] text-slate-100 transition hover:border-cyan-400 hover:bg-slate-800"
+                >
+                  {ex}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </header>
 
@@ -82,8 +171,9 @@ export default function ChatWindow({
         <div className="min-h-[260px] max-h-[460px] overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/80 p-4 text-sm">
           {messages.length === 0 && (
             <p className="text-xs text-slate-500">
-              Commence en expliquant ton contexte. Plus tu es précis, plus
-              l’agent sera utile.
+              Tu peux parler à l’agent comme à un collègue. Clique sur un
+              exemple ci-dessus ou utilise le micro pour lui expliquer ta
+              situation.
             </p>
           )}
 
@@ -114,13 +204,26 @@ export default function ChatWindow({
         </div>
 
         <form onSubmit={handleSend} className="flex gap-2">
+          <button
+            type="button"
+            onClick={toggleVoiceInput}
+            className={`flex items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold ${
+              listening
+                ? "bg-red-500 text-slate-900"
+                : "bg-slate-800 text-slate-100"
+            }`}
+          >
+            {listening ? "🎙️ Stop" : "🎙️ Parler"}
+          </button>
+
           <input
             type="text"
             className="flex-1 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400"
-            placeholder="Écris ta demande ici…"
+            placeholder="Écris ta demande… ou clique sur 🎙️ pour parler."
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
+
           <button
             type="submit"
             disabled={loading}
