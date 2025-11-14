@@ -187,10 +187,10 @@ export default function ChatWindow({
 
       {/* ZONE DE DISCUSSION + INPUT */}
       <div className="space-y-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 shadow-lg">
+        <div className="rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-950/90 to-slate-950/70 p-4 shadow-lg">
           <div className="mb-3 flex items-center justify-between text-[0.7rem] text-slate-400">
             <span>
-              Conversation avec {config?.name ?? "l’agent"} – les réponses
+              Conversation avec {config?.name ?? "l’agent"} – les messages
               s’affichent ici.
             </span>
             <span className="rounded-full border border-slate-700 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-slate-300">
@@ -209,24 +209,45 @@ export default function ChatWindow({
               </div>
             )}
 
-            {messages.map((m, idx) => (
-              <div
-                key={idx}
-                className={`flex ${
-                  m.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
+            {messages.map((m, idx) => {
+              const isUser = m.role === "user";
+
+              if (isUser) {
+                // Bulle côté utilisateur (droite)
+                return (
+                  <div key={idx} className="flex justify-end">
+                    <div className="max-w-[75%] rounded-2xl bg-cyan-500 px-3 py-2 text-xs text-slate-950 shadow-md">
+                      {m.content}
+                    </div>
+                  </div>
+                );
+              }
+
+              // Bulle côté agent (gauche) avec avatar
+              return (
                 <div
-                  className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-xs ${
-                    m.role === "user"
-                      ? "bg-cyan-500 text-slate-950"
-                      : "bg-slate-800 text-slate-100"
-                  }`}
+                  key={idx}
+                  className="flex items-end gap-2 justify-start"
                 >
-                  {m.content}
+                  <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-[0.7rem]">
+                    {config?.avatarSrc ? (
+                      <Image
+                        src={config.avatarSrc}
+                        alt={config?.name ?? "Agent"}
+                        width={32}
+                        height={32}
+                        className="h-8 w-8 object-cover"
+                      />
+                    ) : (
+                      <span>{config?.avatar ?? "🤖"}</span>
+                    )}
+                  </div>
+                  <div className="max-w-[75%] rounded-2xl bg-slate-800 px-3 py-2 text-xs text-slate-100 shadow-md">
+                    {m.content}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {loading && (
               <p className="mt-1 text-xs text-slate-400">
@@ -271,7 +292,8 @@ export default function ChatWindow({
           </div>
 
           <p className="text-[0.7rem] text-slate-500">
-            Entrée pour envoyer · <span className="font-semibold">🎙</span> pour
+            Appuie sur <span className="font-semibold">Entrée</span> pour
+            envoyer · utilise <span className="font-semibold">🎙</span> pour
             dicter ton message.
           </p>
         </form>
