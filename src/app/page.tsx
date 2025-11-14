@@ -24,10 +24,11 @@ export default function Home() {
       </header>
 
       <div className="grid gap-4 md:grid-cols-4">
+
         {/* Prospection */}
         <Link
           href="/prospection"
-          className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition hover:border-cyan-400 hover:bg-slate-900"
+          className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition-transform duration-150 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/20 hover:border-cyan-400 hover:bg-slate-900"
         >
           <div className="mb-3 flex items-center gap-3">
             <div className="h-20 w-20 overflow-hidden rounded-full bg-slate-800">
@@ -59,7 +60,7 @@ export default function Home() {
         {/* Messages */}
         <Link
           href="/messages"
-          className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition hover:border-cyan-400 hover:bg-slate-900"
+          className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition-transform duration-150 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/20 hover:border-cyan-400 hover:bg-slate-900"
         >
           <div className="mb-3 flex items-center gap-3">
             <div className="h-20 w-20 overflow-hidden rounded-full bg-slate-800">
@@ -91,7 +92,7 @@ export default function Home() {
         {/* Analyste */}
         <Link
           href="/analyse"
-          className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition hover:border-cyan-400 hover:bg-slate-900"
+          className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition-transform duration-150 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/20 hover:border-cyan-400 hover:bg-slate-900"
         >
           <div className="mb-3 flex items-center gap-3">
             <div className="h-20 w-20 overflow-hidden rounded-full bg-slate-800">
@@ -122,7 +123,7 @@ export default function Home() {
         {/* Coach */}
         <Link
           href="/coach"
-          className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition hover:border-cyan-400 hover:bg-slate-900"
+          className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition-transform duration-150 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/20 hover:border-cyan-400 hover:bg-slate-900"
         >
           <div className="mb-3 flex items-center gap-3">
             <div className="h-20 w-20 overflow-hidden rounded-full bg-slate-800">
@@ -149,6 +150,7 @@ export default function Home() {
             Améliorer ta façon d’utiliser l’IA et structurer ta prospection.
           </p>
         </Link>
+
       </div>
     </div>
   );
