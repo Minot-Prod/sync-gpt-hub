@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { AgentId, ChatMessage } from "@/lib/types";
 import { getAgentConfig } from "@/lib/agents";
@@ -124,8 +125,18 @@ export default function ChatWindow({
     <div className="space-y-4">
       <header className="space-y-2">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-xl">
-            {config?.avatar ?? "🤖"}
+          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xl">
+            {config?.avatarSrc ? (
+              <Image
+                src={config.avatarSrc}
+                alt={config.name}
+                width={40}
+                height={40}
+                className="h-10 w-10 object-cover"
+              />
+            ) : (
+              <span>{config?.avatar ?? "🤖"}</span>
+            )}
           </div>
           <div>
             <h1 className="text-xl font-semibold tracking-tight">

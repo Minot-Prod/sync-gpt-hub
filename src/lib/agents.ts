@@ -3,7 +3,8 @@
 type AgentConfig = {
   id: AgentId;
   name: string;
-  avatar: string;
+  avatar: string;      // emoji fallback
+  avatarSrc?: string;  // chemin vers l’image dans /public
   tagline: string;
   systemPrompt: string;
   examples: string[];
@@ -14,6 +15,7 @@ export const agents: Record<AgentId, AgentConfig> = {
     id: "prospection",
     name: "Léa – Prospection Sync",
     avatar: "🧭",
+    avatarSrc: "/avatars/lea-prospection.png",
     tagline: "Je t’aide à trouver les bonnes entreprises à contacter en priorité.",
     examples: [
       "Propose-moi 15 entreprises à cibler dans l’événementiel au Québec.",
@@ -46,6 +48,7 @@ Pas de données sensibles ni de prix réels. Ne propose jamais de rendre ce syst
     id: "messages",
     name: "Nico – Rédaction & Scripts",
     avatar: "✍️",
+    avatarSrc: "/avatars/nico-messages.png",
     tagline: "Je t’aide à écrire des messages clairs, pros et efficaces.",
     examples: [
       "Écris-moi un email de prospection pour un directeur marketing.",
@@ -79,6 +82,7 @@ Alignement Sync : pro, fiable, chaleureux sans agressivité. Pas de données sen
     id: "analyse",
     name: "Alex – Analyste d’entreprise",
     avatar: "📊",
+    avatarSrc: "/avatars/alex-analyse.png",
     tagline: "Je t’aide à comprendre un prospect et à préparer ton pitch.",
     examples: [
       "Analyse cette entreprise et dis-moi si elle est intéressante pour Sync.",
@@ -111,6 +115,7 @@ Tu signales ce qui est hypothétique. Aucun chiffre confidentiel.`,
     id: "coach",
     name: "Sam – Coach IA Vente",
     avatar: "🎧",
+    avatarSrc: "/avatars/sam-coach.png",
     tagline: "Je t’aide à mieux utiliser l’IA dans ta prospection.",
     examples: [
       "Explique-moi comment organiser ma prospection sur une semaine.",
