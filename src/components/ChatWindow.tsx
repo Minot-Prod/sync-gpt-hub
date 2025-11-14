@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AgentId, ChatMessage } from "@/lib/types";
 
 type Props = {
@@ -19,6 +19,11 @@ export default function ChatWindow({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -104,6 +109,8 @@ export default function ChatWindow({
           {loading && (
             <p className="mt-1 text-xs text-slate-400">L’agent réfléchit…</p>
           )}
+
+          <div ref={bottomRef} />
         </div>
 
         <form onSubmit={handleSend} className="flex gap-2">
