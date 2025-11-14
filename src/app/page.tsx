@@ -5,28 +5,25 @@ import { agents } from "@/lib/agents";
 export default function Home() {
   return (
     <div className="space-y-6">
-      <header className="space-y-1 flex items-center gap-4">
+      {/* Header avec logo Sync centré */}
+      <header className="flex flex-col items-center space-y-3 text-center">
         <Image
           src="/images/sync-logo.png"
           alt="Sync Productions"
-          width={60}
-          height={60}
-          className="opacity-90 hover:opacity-100 transition"
+          width={140}
+          height={140}
+          className="mb-1"
         />
-
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Hub Sync – Agents IA Ventes
-          </h1>
-          <p className="text-sm text-slate-400">
-            Choisis un agent selon ce que tu veux faire : trouver des entreprises,
-            rédiger des messages, analyser un client ou te faire coacher.
-          </p>
-        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Hub Sync – Agents IA Ventes
+        </h1>
+        <p className="text-sm text-slate-400 max-w-2xl">
+          Choisis un agent selon ce que tu veux faire : trouver des entreprises,
+          rédiger des messages, analyser un client ou te faire coacher.
+        </p>
       </header>
 
       <div className="grid gap-4 md:grid-cols-4">
-
         {/* Prospection */}
         <Link
           href="/prospection"
@@ -45,12 +42,17 @@ export default function Home() {
               )}
             </div>
             <div>
-              <h2 className="text-base font-semibold">{agents.prospection.name}</h2>
-              <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">Agent</p>
+              <h2 className="text-base font-semibold">
+                {agents.prospection.name}
+              </h2>
+              <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
+                Agent
+              </p>
             </div>
           </div>
           <p className="text-xs text-slate-200">
-            Trouver des entreprises cibles, segments et pistes de développement pour Sync.
+            Trouver des entreprises cibles, segments et pistes de développement
+            pour Sync.
           </p>
         </Link>
 
@@ -72,12 +74,17 @@ export default function Home() {
               )}
             </div>
             <div>
-              <h2 className="text-base font-semibold">{agents.messages.name}</h2>
-              <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">Agent</p>
+              <h2 className="text-base font-semibold">
+                {agents.messages.name}
+              </h2>
+              <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
+                Agent
+              </p>
             </div>
           </div>
           <p className="text-xs text-slate-200">
-            Générer des emails, messages LinkedIn et scripts d’appel alignés Sync.
+            Générer des emails, messages LinkedIn et scripts d’appel alignés
+            Sync.
           </p>
         </Link>
 
@@ -99,8 +106,12 @@ export default function Home() {
               )}
             </div>
             <div>
-              <h2 className="text-base font-semibold">{agents.analyse.name}</h2>
-              <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">Agent</p>
+              <h2 className="text-base font-semibold">
+                {agents.analyse.name}
+              </h2>
+              <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
+                Agent
+              </p>
             </div>
           </div>
           <p className="text-xs text-slate-200">
@@ -126,15 +137,18 @@ export default function Home() {
               )}
             </div>
             <div>
-              <h2 className="text-base font-semibold">{agents.coach.name}</h2>
-              <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">Coach</p>
+              <h2 className="text-base font-semibold">
+                {agents.coach.name}
+              </h2>
+              <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
+                Coach
+              </p>
             </div>
           </div>
           <p className="text-xs text-slate-200">
             Améliorer ta façon d’utiliser l’IA et structurer ta prospection.
           </p>
         </Link>
-
       </div>
     </div>
   );
