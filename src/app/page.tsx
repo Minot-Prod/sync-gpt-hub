@@ -21,29 +21,34 @@ export default function Home() {
           href="/prospection"
           className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition hover:border-cyan-400 hover:bg-slate-900"
         >
-          <div className="mb-3 flex items-center gap-3">
-            <div className="h-10 w-10 overflow-hidden rounded-full bg-slate-800">
-              {agents.prospection.avatarSrc && (
-                <Image
-                  src={agents.prospection.avatarSrc}
-                  alt={agents.prospection.name}
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 object-cover"
-                />
-              )}
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className="relative">
+              <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-800">
+                {agents.prospection.avatarSrc && (
+                  <Image
+                    src={agents.prospection.avatarSrc}
+                    alt={agents.prospection.name}
+                    width={96}
+                    height={96}
+                    className="h-24 w-24 object-cover"
+                  />
+                )}
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-cyan-400/0 transition group-hover:ring-cyan-400/70" />
             </div>
             <div>
-              <h2 className="text-base font-semibold">Prospection</h2>
+              <h2 className="text-base font-semibold text-slate-50">
+                Prospection
+              </h2>
               <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
                 Agent
               </p>
             </div>
+            <p className="mt-1 text-xs text-slate-200">
+              Trouver des entreprises cibles, segments et pistes de
+              développement pour Sync.
+            </p>
           </div>
-          <p className="text-xs text-slate-200">
-            Trouver des entreprises cibles, segments et pistes de
-            développement pour Sync.
-          </p>
         </Link>
 
         {/* Rédaction & Scripts */}
@@ -51,28 +56,34 @@ export default function Home() {
           href="/messages"
           className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition hover:border-cyan-400 hover:bg-slate-900"
         >
-          <div className="mb-3 flex items-center gap-3">
-            <div className="h-10 w-10 overflow-hidden rounded-full bg-slate-800">
-              {agents.messages.avatarSrc && (
-                <Image
-                  src={agents.messages.avatarSrc}
-                  alt={agents.messages.name}
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 object-cover"
-                />
-              )}
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className="relative">
+              <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-800">
+                {agents.messages.avatarSrc && (
+                  <Image
+                    src={agents.messages.avatarSrc}
+                    alt={agents.messages.name}
+                    width={96}
+                    height={96}
+                    className="h-24 w-24 object-cover"
+                  />
+                )}
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-cyan-400/0 transition group-hover:ring-cyan-400/70" />
             </div>
             <div>
-              <h2 className="text-base font-semibold">Rédaction &amp; Scripts</h2>
+              <h2 className="text-base font-semibold text-slate-50">
+                Rédaction &amp; Scripts
+              </h2>
               <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
                 Agent
               </p>
             </div>
+            <p className="mt-1 text-xs text-slate-200">
+              Générer des emails, messages LinkedIn et scripts d’appel alignés
+              Sync.
+            </p>
           </div>
-          <p className="text-xs text-slate-200">
-            Générer des emails, messages LinkedIn et scripts d’appel alignés Sync.
-          </p>
         </Link>
 
         {/* Analyse d’entreprise */}
@@ -80,28 +91,33 @@ export default function Home() {
           href="/analyse"
           className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition hover:border-cyan-400 hover:bg-slate-900"
         >
-          <div className="mb-3 flex items-center gap-3">
-            <div className="h-10 w-10 overflow-hidden rounded-full bg-slate-800">
-              {agents.analyse.avatarSrc && (
-                <Image
-                  src={agents.analyse.avatarSrc}
-                  alt={agents.analyse.name}
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 object-cover"
-                />
-              )}
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className="relative">
+              <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-800">
+                {agents.analyse.avatarSrc && (
+                  <Image
+                    src={agents.analyse.avatarSrc}
+                    alt={agents.analyse.name}
+                    width={96}
+                    height={96}
+                    className="h-24 w-24 object-cover"
+                  />
+                )}
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-cyan-400/0 transition group-hover:ring-cyan-400/70" />
             </div>
             <div>
-              <h2 className="text-base font-semibold">Analyste d’entreprise</h2>
+              <h2 className="text-base font-semibold text-slate-50">
+                Analyste d’entreprise
+              </h2>
               <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
                 Agent
               </p>
             </div>
+            <p className="mt-1 text-xs text-slate-200">
+              Comprendre un prospect et préparer un pitch événementiel.
+            </p>
           </div>
-          <p className="text-xs text-slate-200">
-            Comprendre un prospect et préparer un pitch événementiel.
-          </p>
         </Link>
 
         {/* Coach IA Vente */}
@@ -109,28 +125,33 @@ export default function Home() {
           href="/coach"
           className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-4 text-sm shadow-sm transition hover:border-cyan-400 hover:bg-slate-900"
         >
-          <div className="mb-3 flex items-center gap-3">
-            <div className="h-10 w-10 overflow-hidden rounded-full bg-slate-800">
-              {agents.coach.avatarSrc && (
-                <Image
-                  src={agents.coach.avatarSrc}
-                  alt={agents.coach.name}
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 object-cover"
-                />
-              )}
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className="relative">
+              <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-800">
+                {agents.coach.avatarSrc && (
+                  <Image
+                    src={agents.coach.avatarSrc}
+                    alt={agents.coach.name}
+                    width={96}
+                    height={96}
+                    className="h-24 w-24 object-cover"
+                  />
+                )}
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-cyan-400/0 transition group-hover:ring-cyan-400/70" />
             </div>
             <div>
-              <h2 className="text-base font-semibold">Coach IA Vente</h2>
+              <h2 className="text-base font-semibold text-slate-50">
+                Coach IA Vente
+              </h2>
               <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
                 Coach
               </p>
             </div>
+            <p className="mt-1 text-xs text-slate-200">
+              Améliorer ta façon d’utiliser l’IA et structurer ta prospection.
+            </p>
           </div>
-          <p className="text-xs text-slate-200">
-            Améliorer ta façon d’utiliser l’IA et structurer ta prospection.
-          </p>
         </Link>
       </div>
     </div>
