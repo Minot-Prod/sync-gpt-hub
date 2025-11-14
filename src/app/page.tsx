@@ -23,25 +23,24 @@ export default function Home() {
         >
           <div className="flex flex-col items-center text-center gap-3">
             <div className="relative">
-              <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-28 w-28 overflow-hidden rounded-full bg-slate-800">
                 {agents.prospection.avatarSrc && (
                   <Image
                     src={agents.prospection.avatarSrc}
                     alt={agents.prospection.name}
-                    width={96}
-                    height={96}
-                    className="h-24 w-24 object-cover"
+                    width={112}
+                    height={112}
+                    className="h-28 w-28 object-cover"
                   />
                 )}
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-cyan-400/0 transition group-hover:ring-cyan-400/70" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-slate-50">
-                Prospection
+                {agents.prospection.name}
               </h2>
               <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
-                Agent
+                Prospection · Agent
               </p>
             </div>
             <p className="mt-1 text-xs text-slate-200">
@@ -58,25 +57,24 @@ export default function Home() {
         >
           <div className="flex flex-col items-center text-center gap-3">
             <div className="relative">
-              <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-28 w-28 overflow-hidden rounded-full bg-slate-800">
                 {agents.messages.avatarSrc && (
                   <Image
                     src={agents.messages.avatarSrc}
                     alt={agents.messages.name}
-                    width={96}
-                    height={96}
-                    className="h-24 w-24 object-cover"
+                    width={112}
+                    height={112}
+                    className="h-28 w-28 object-cover"
                   />
                 )}
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-cyan-400/0 transition group-hover:ring-cyan-400/70" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-slate-50">
-                Rédaction &amp; Scripts
+                {agents.messages.name}
               </h2>
               <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
-                Agent
+                Rédaction &amp; Scripts · Agent
               </p>
             </div>
             <p className="mt-1 text-xs text-slate-200">
@@ -93,25 +91,24 @@ export default function Home() {
         >
           <div className="flex flex-col items-center text-center gap-3">
             <div className="relative">
-              <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-28 w-28 overflow-hidden rounded-full bg-slate-800">
                 {agents.analyse.avatarSrc && (
                   <Image
                     src={agents.analyse.avatarSrc}
                     alt={agents.analyse.name}
-                    width={96}
-                    height={96}
-                    className="h-24 w-24 object-cover"
+                    width={112}
+                    height={112}
+                    className="h-28 w-28 object-cover"
                   />
                 )}
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-cyan-400/0 transition group-hover:ring-cyan-400/70" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-slate-50">
-                Analyste d’entreprise
+                {agents.analyse.name}
               </h2>
               <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
-                Agent
+                Analyse d’entreprise · Agent
               </p>
             </div>
             <p className="mt-1 text-xs text-slate-200">
@@ -127,25 +124,24 @@ export default function Home() {
         >
           <div className="flex flex-col items-center text-center gap-3">
             <div className="relative">
-              <div className="h-24 w-24 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-28 w-28 overflow-hidden rounded-full bg-slate-800">
                 {agents.coach.avatarSrc && (
                   <Image
                     src={agents.coach.avatarSrc}
                     alt={agents.coach.name}
-                    width={96}
-                    height={96}
-                    className="h-24 w-24 object-cover"
+                    width={112}
+                    height={112}
+                    className="h-28 w-28 object-cover"
                   />
                 )}
               </div>
-              <div className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-cyan-400/0 transition group-hover:ring-cyan-400/70" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-slate-50">
-                Coach IA Vente
+                {agents.coach.name}
               </h2>
               <p className="text-[0.7rem] uppercase tracking-[0.16em] text-cyan-300">
-                Coach
+                Coach IA Vente · Coach
               </p>
             </div>
             <p className="mt-1 text-xs text-slate-200">
