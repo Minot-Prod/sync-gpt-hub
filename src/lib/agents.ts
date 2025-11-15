@@ -1,5 +1,11 @@
 ﻿import type { AgentId } from "./types";
 
+type AgentVoiceConfig = {
+  provider: "openai";
+  model: string;
+  voice: string; // nom de la voix TTS (OpenAI: alloy, verse, sage, coral, ash…)
+};
+
 type AgentConfig = {
   id: AgentId;
   name: string;
@@ -8,6 +14,7 @@ type AgentConfig = {
   tagline: string;
   systemPrompt: string;
   examples: string[];
+  voice?: AgentVoiceConfig;
 };
 
 export const agents: Record<AgentId, AgentConfig> = {
@@ -43,6 +50,11 @@ Tes réponses :
 - 1 à 3 next steps concrets.
 
 Pas de données sensibles ni de prix réels. Ne propose jamais de rendre ce système public.`,
+    voice: {
+      provider: "openai",
+      model: process.env.OPENAI_TTS_MODEL || "gpt-4o-mini-tts",
+      voice: "alloy"
+    }
   },
   messages: {
     id: "messages",
@@ -77,6 +89,11 @@ Tu fournis :
 - plusieurs objets possibles si pertinent.
 
 Alignement Sync : pro, fiable, chaleureux sans agressivité. Pas de données sensibles.`,
+    voice: {
+      provider: "openai",
+      model: process.env.OPENAI_TTS_MODEL || "gpt-4o-mini-tts",
+      voice: "coral"
+    }
   },
   analyse: {
     id: "analyse",
@@ -110,6 +127,11 @@ Réponse structurée :
 - points d'attention.
 
 Tu signales ce qui est hypothétique. Aucun chiffre confidentiel.`,
+    voice: {
+      provider: "openai",
+      model: process.env.OPENAI_TTS_MODEL || "gpt-4o-mini-tts",
+      voice: "sage"
+    }
   },
   coach: {
     id: "coach",
@@ -138,6 +160,11 @@ Tu es question-first :
 Tu expliques tes choix et proposes des routines simples.
 Tu encourages l'organisation par dossier client dans les chats.
 Motivant, concret, jamais condescendant.`,
+    voice: {
+      provider: "openai",
+      model: process.env.OPENAI_TTS_MODEL || "gpt-4o-mini-tts",
+      voice: "verse"
+    }
   },
   radar: {
     id: "radar",
@@ -185,6 +212,11 @@ Ta mission : détecter des **opportunités d'événements** (galas, conférences
    - Timing conseillé (quand contacter).
 
 Si la demande est floue, commence par 2–3 questions de cadrage (zone, secteur, horizon souhaité, type d’événements).`,
+    voice: {
+      provider: "openai",
+      model: process.env.OPENAI_TTS_MODEL || "gpt-4o-mini-tts",
+      voice: "ash"
+    }
   },
 };
 

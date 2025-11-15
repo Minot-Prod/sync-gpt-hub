@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { AgentId, ChatMessage } from "@/lib/types";
@@ -24,8 +25,12 @@ export default function ChatWindow({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const recognitionRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const config = getAgentConfig(agent);
   const headingTitle = config?.name || title;
@@ -34,7 +39,7 @@ export default function ChatWindow({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  async function handleSend(e: React.FormEvent) {
+  async function handleSend(e: FormEvent) {
     e.preventDefault();
     const trimmed = input.trim();
     if (!trimmed) return;
@@ -123,6 +128,53 @@ export default function ChatWindow({
     }
   }
 
+  async function playVoiceForMessage(index: number, text: string) {
+    try {
+      if (!voiceEnabled) return;
+      if (!config?.voice) return;
+
+      setPlayingIndex(index);
+
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, agentId: agent }),
+      });
+
+      if (!res.ok) {
+        console.error("TTS error", await res.text());
+        setPlayingIndex(null);
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+
+      const audio = new Audio(url);
+      audioRef.current = audio;
+
+      audio.onended = () => {
+        setPlayingIndex(null);
+        URL.revokeObjectURL(url);
+      };
+
+      audio.onerror = () => {
+        setPlayingIndex(null);
+        URL.revokeObjectURL(url);
+      };
+
+      await audio.play();
+    } catch (e) {
+      console.error(e);
+      setPlayingIndex(null);
+    }
+  }
+
   const placeholder =
     config?.name != null
       ? `Écris ici ton message pour ${config.name}…`
@@ -132,31 +184,47 @@ export default function ChatWindow({
     <div className="space-y-4">
       {/* EN-TÊTE AGENT */}
       <header className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xl">
-            {config?.avatarSrc ? (
-              <Image
-                src={config.avatarSrc}
-                alt={config.name}
-                width={48}
-                height={48}
-                className="h-12 w-12 object-cover"
-              />
-            ) : (
-              <span>{config?.avatar ?? "🤖"}</span>
-            )}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xl">
+              {config?.avatarSrc ? (
+                <Image
+                  src={config.avatarSrc}
+                  alt={config.name}
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 object-cover"
+                />
+              ) : (
+                <span>{config?.avatar ?? "🤖"}</span>
+              )}
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold tracking-tight">
+                {headingTitle}
+              </h1>
+              {config?.tagline && (
+                <p className="text-xs text-slate-300">{config.tagline}</p>
+              )}
+              {subtitle && (
+                <p className="text-xs text-slate-400">{subtitle}</p>
+              )}
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight">
-              {headingTitle}
-            </h1>
-            {config?.tagline && (
-              <p className="text-xs text-slate-300">{config.tagline}</p>
-            )}
-            {subtitle && (
-              <p className="text-xs text-slate-400">{subtitle}</p>
-            )}
-          </div>
+
+          {config?.voice && (
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 text-[0.7rem] text-slate-400">
+                <input
+                  type="checkbox"
+                  className="h-3 w-3 rounded border-slate-600 bg-slate-900"
+                  checked={voiceEnabled}
+                  onChange={(e) => setVoiceEnabled(e.target.checked)}
+                />
+                <span>Activer la voix de {config?.name ?? "l’agent"}</span>
+              </label>
+            </div>
+          )}
         </div>
 
         {initialSystemHint && (
@@ -253,11 +321,27 @@ export default function ChatWindow({
                       {isUser ? (
                         <span className="break-words">{m.content}</span>
                       ) : (
-                        <div className="prose prose-invert prose-xs max-w-none break-words">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {m.content}
-                          </ReactMarkdown>
-                        </div>
+                        <>
+                          <div className="prose prose-invert prose-xs max-w-none break-words">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {m.content}
+                            </ReactMarkdown>
+                          </div>
+                          {config?.voice && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                playVoiceForMessage(idx, m.content)
+                              }
+                              disabled={!voiceEnabled || playingIndex === idx}
+                              className="mt-2 inline-flex items-center gap-1 rounded-full border border-slate-600 bg-slate-900 px-2 py-1 text-[0.65rem] text-slate-200 disabled:opacity-50"
+                            >
+                              {playingIndex === idx
+                                ? "🔊 Lecture en cours…"
+                                : "🔊 Écouter la réponse"}
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
