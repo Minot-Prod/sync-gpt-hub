@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { agents } from "@/lib/agents";
 
 type TtsRequestBody = {
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     if (!agent) {
       console.error("[TTS] Agent introuvable pour id:", agentId);
       return NextResponse.json(
-        { error: Unknown agentId:  },
+        { error: "Unknown agentId" },
         { status: 400 }
       );
     }
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     if (!agent.voice) {
       console.error("[TTS] Aucune config 'voice' pour agent:", agentId);
       return NextResponse.json(
-        { error: Agent  does not have a voice configuration. },
+        { error: "Agent does not have a voice configuration." },
         { status: 400 }
       );
     }
