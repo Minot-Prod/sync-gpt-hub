@@ -8,7 +8,10 @@ import { AgentId, ChatMessage } from "@/lib/types";
 import { getAgentConfig } from "@/lib/agents";
 
 type ChatWindowProps = {
-  agentId: AgentId;
+  agentId?: AgentId; // nouveau: support agentId
+  agent?: AgentId;   // rétrocompat: support prop agent
+  title?: string;
+  subtitle?: string;
   initialSystemMessage?: string;
   initialSystemHint?: string;
   placeholder?: string;
@@ -16,11 +19,15 @@ type ChatWindowProps = {
 
 export default function ChatWindow({
   agentId,
+  agent,
+  title,
+  subtitle,
   initialSystemMessage,
   initialSystemHint: initialSystemHintProp,
   placeholder,
 }: ChatWindowProps) {
-  const config = getAgentConfig(agentId);
+  const effectiveAgentId = (agentId ?? agent) as AgentId;
+  const config = getAgentConfig(effectiveAgentId);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -35,6 +42,10 @@ export default function ChatWindow({
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const initialSystemHint = initialSystemHintProp;
+
+  const titleText = title ?? config?.name ?? "Agent IA Sync";
+  const subtitleText =
+    subtitle ?? config?.tagline ?? "Assistant IA personnalisé pour Sync.";
 
   // Init SpeechRecognition
   useEffect(() => {
@@ -110,7 +121,7 @@ export default function ChatWindow({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          agent: agentId,
+          agent: effectiveAgentId,
           messages: payloadMessages,
         }),
       });
@@ -175,7 +186,7 @@ export default function ChatWindow({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           text: content,
-          agentId,
+          agentId: effectiveAgentId,
         }),
       });
 
@@ -208,8 +219,7 @@ export default function ChatWindow({
   };
 
   const placeholderText =
-    placeholder ??
-    `Pose ta question à ${config?.name ?? "l’agent"}…`;
+    placeholder ?? `Pose ta question à ${titleText}…`;
 
   return (
     <div className="flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-950/80 p-4 text-slate-100 shadow-xl">
@@ -221,7 +231,7 @@ export default function ChatWindow({
               {config?.avatarSrc ? (
                 <Image
                   src={config.avatarSrc}
-                  alt={config?.name}
+                  alt={titleText}
                   width={40}
                   height={40}
                   className="h-10 w-10 object-cover"
@@ -232,11 +242,9 @@ export default function ChatWindow({
             </div>
             <div>
               <h2 className="text-sm font-semibold text-slate-50">
-                {config?.name ?? "Agent IA Sync"}
+                {titleText}
               </h2>
-              <p className="text-xs text-slate-400">
-                {config?.tagline ?? "Assistant IA personnalisé pour Sync."}
-              </p>
+              <p className="text-xs text-slate-400">{subtitleText}</p>
             </div>
           </div>
 
@@ -249,7 +257,7 @@ export default function ChatWindow({
                   checked={voiceEnabled}
                   onChange={(e) => setVoiceEnabled(e.target.checked)}
                 />
-                <span>Activer la voix de {config?.name ?? "l’agent"}</span>
+                <span>Activer la voix de {titleText}</span>
               </label>
             </div>
           )}
@@ -288,8 +296,7 @@ export default function ChatWindow({
         <div className="rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-950/90 to-slate-950/70 p-4 shadow-lg">
           <div className="mb-3 flex items-center justify-between text-[0.7rem] text-slate-400">
             <span>
-              Conversation avec {config?.name ?? "l’agent"} – les messages
-              s’affichent ici.
+              Conversation avec {titleText} – les messages s’affichent ici.
             </span>
             <span className="rounded-full border border-slate-700 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-slate-300">
               Zone de discussion
@@ -302,7 +309,7 @@ export default function ChatWindow({
                 <p>
                   Commence la discussion en écrivant ton message ci-dessous
                   ou en utilisant le bouton 🎙 pour parler à{" "}
-                  {config?.name ?? "l’agent"}.
+                  {titleText}.
                 </p>
               </div>
             )}
@@ -328,7 +335,7 @@ export default function ChatWindow({
                         {config?.avatarSrc ? (
                           <Image
                             src={config.avatarSrc}
-                            alt={config?.name}
+                            alt={titleText}
                             width={32}
                             height={32}
                             className="h-8 w-8 object-cover"
