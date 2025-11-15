@@ -1,91 +1,44 @@
 ﻿import * as React from "react";
+import Link from "next/link";
 import { AppShell } from "../../components/layout/AppShell";
 import { Card } from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
 import { SectionHeader } from "../../components/ui/SectionHeader";
 
-const kpis = [
-  {
-    label: "Taux de réponse global",
-    value: "24%",
-    hint: "Tous canaux confondus sur les 30 derniers jours.",
-  },
-  {
-    label: "RDV générés",
-    value: "17",
-    hint: "Meetings attribués à Sync GPT Hub.",
-  },
-  {
-    label: "Temps gagné",
-    value: "+9h / semaine",
-    hint: "Estimation sur la base des tâches automatisées.",
-  },
-];
-
-const reports = [
-  {
-    title: "Performance par séquence",
-    desc: "Compare le taux d’ouverture, de clic et de réponse pour chaque séquence.",
-  },
-  {
-    title: "Analyse par persona",
-    desc: "Identifie les personas qui réagissent le mieux à tes messages actuels.",
-  },
-  {
-    title: "Analyse par canal",
-    desc: "Répartition Email / LinkedIn / autres canaux et impact dans le pipeline.",
-  },
-];
-
-const insights = [
-  "Les séquences multi-touch obtiennent 1.7x plus de réponses que les séquences mono-canal.",
-  "Les messages courts en ouverture performent mieux sur les décideurs C-level.",
-  "Les relances au jour 3 et 7 génèrent la majorité des réponses positives.",
+const analyses = [
+  { company: "Entreprise A", note: "Client régulier · fort potentiel upsell." },
+  { company: "Agence B", note: "Agence événementielle · bon fit Sync." },
+  { company: "Groupe C", note: "Grand groupe · cible pour galas annuels." },
 ];
 
 export default function Page() {
   return (
     <AppShell
       title="Analyse"
-      subtitle="Comprends ce que tes agents IA produisent réellement en termes de business."
+      subtitle="Décode les entreprises et prépare tes angles de pitch avec l’IA."
     >
       <div className="stack" style={{ gap: "1.5rem" }}>
-        {/* KPIs principaux */}
-        <section>
+        <section className="stack" style={{ gap: "1rem" }}>
           <SectionHeader
-            title="KPIs clés"
-            subtitle="Vue d’ensemble des résultats générés par Sync GPT Hub."
+            title="Analyses récentes"
+            subtitle="Synthèses et opportunités déjà préparées."
           />
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "1rem",
-            }}
-          >
-            {kpis.map((kpi) => (
-              <Card key={kpi.label}>
-                <p className="text-muted" style={{ marginBottom: "0.35rem" }}>
-                  {kpi.label}
-                </p>
-                <div
-                  style={{
-                    fontSize: "1.6rem",
-                    fontWeight: 600,
-                    marginBottom: "0.25rem",
-                  }}
-                >
-                  {kpi.value}
+          <Card>
+            <div className="stack" style={{ gap: "0.75rem" }}>
+              {analyses.map((a) => (
+                <div key={a.company} className="stack" style={{ gap: "0.25rem" }}>
+                  <div style={{ fontWeight: 500 }}>{a.company}</div>
+                  <div
+                    className="text-muted"
+                    style={{ fontSize: "0.85rem" }}
+                  >
+                    {a.note}
+                  </div>
                 </div>
-                <p className="text-muted" style={{ fontSize: "0.85rem" }}>
-                  {kpi.hint}
-                </p>
-              </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Card>
         </section>
 
-        {/* Rapports & insights */}
         <section
           style={{
             display: "grid",
@@ -93,74 +46,44 @@ export default function Page() {
             gap: "1.5rem",
           }}
         >
-          {/* Rapports dispo */}
-          <div className="stack" style={{ gap: "1rem" }}>
+          <Card>
             <SectionHeader
-              title="Rapports disponibles"
-              subtitle="Les vues que tu peux générer ou envoyer à ton board."
-              rightSlot={
-                <Button variant="ghost">
-                  Exporter en PDF
-                </Button>
-              }
+              title="Dossiers clients"
+              subtitle="Structure les infos clés avant un rendez-vous."
             />
-            <Card soft>
-              <div className="stack" style={{ gap: "0.75rem" }}>
-                {reports.map((report) => (
-                  <div
-                    key={report.title}
-                    className="stack"
-                    style={{ gap: "0.35rem", paddingBottom: "0.5rem", borderBottom: "1px solid rgba(148, 163, 184, 0.2)" }}
-                  >
-                    <div style={{ fontWeight: 500 }}>{report.title}</div>
-                    <div className="text-muted" style={{ fontSize: "0.85rem" }}>
-                      {report.desc}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
+            <p className="text-muted" style={{ fontSize: "0.9rem" }}>
+              Note les infos importantes sur chaque client : type d’événements,
+              budget probable, style, enjeux. L’agent Analyse peut t’aider à
+              transformer ça en angles de pitch concrets.
+            </p>
+          </Card>
 
-          {/* Bloc insights IA */}
-          <div className="stack" style={{ gap: "1rem" }}>
+          <Card soft>
             <SectionHeader
-              title="Insights IA"
-              subtitle="Observations prêtes à être partagées en réunion."
+              title="Agent Analyse (Alex)"
+              subtitle="Comprendre un client et préparer ton discours."
             />
-            <Card>
-              <div className="stack" style={{ gap: "0.75rem" }}>
-                <p className="text-muted" style={{ fontSize: "0.9rem" }}>
-                  Ce bloc est pensé pour regrouper les points que Sync GPT remonte
-                  automatiquement après analyse des campagnes, messages et pipelines.
-                </p>
-                <ul
-                  className="text-muted"
-                  style={{
-                    margin: 0,
-                    paddingLeft: "1.1rem",
-                    fontSize: "0.85rem",
-                  }}
-                >
-                  {insights.map((insight) => (
-                    <li key={insight} style={{ marginBottom: "0.35rem" }}>
-                      {insight}
-                    </li>
-                  ))}
-                </ul>
-                <div style={{ marginTop: "1rem" }}>
-                  <Button variant="primary">
-                    Générer un rapport complet
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </div>
+            <p className="text-muted" style={{ fontSize: "0.9rem" }}>
+              Alex analyse le profil d’une entreprise et t’aide à voir où Sync
+              apporte le plus de valeur. Tu peux lui coller du texte, un site,
+              une description, et il te sort un plan clair.
+            </p>
+            <ul
+              className="text-muted"
+              style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.85rem" }}
+            >
+              <li>Résumer un site web client en points utiles pour la vente.</li>
+              <li>Identifier 2–3 angles de pitch crédibles pour Sync.</li>
+              <li>Préparer des questions intelligentes pour le rendez-vous.</li>
+            </ul>
+            <div style={{ marginTop: "0.75rem" }}>
+              <Link href="/assistant?agent=analyse" className="btn btn-primary">
+                Ouvrir l’agent Analyse (GPT)
+              </Link>
+            </div>
+          </Card>
         </section>
       </div>
     </AppShell>
   );
 }
-
-
-
