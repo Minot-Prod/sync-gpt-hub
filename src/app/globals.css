@@ -1,30 +1,30 @@
 ﻿:root {
-  /* Couleurs principales */
-  --bg: #020617;
-  --bg-elevated: #020617;
-  --bg-soft: #020617;
-  --border-subtle: #1e293b;
-  --fg: #e5e7eb;
-  --fg-muted: #9ca3af;
-  --fg-soft: #6b7280;
+  /* Couleurs principales - thème clair */
+  --bg: #e5ecf6;
+  --bg-elevated: #f9fafb;
+  --bg-soft: #f3f4f6;
+  --border-subtle: #e2e8f0;
+  --fg: #0f172a;
+  --fg-muted: #6b7280;
+  --fg-soft: #9ca3af;
 
-  /* Accent IA */
-  --accent: #6366f1;
-  --accent-soft: rgba(99, 102, 241, 0.1);
-  --accent-strong: #4f46e5;
+  /* Accent Parlios léger */
+  --accent: #0ea5e9;
+  --accent-soft: rgba(14, 165, 233, 0.08);
+  --accent-strong: #6366f1;
 
   /* États */
-  --success: #22c55e;
-  --warning: #fbbf24;
+  --success: #16a34a;
+  --warning: #eab308;
   --danger: #ef4444;
 
   /* Typo & layout */
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", Roboto, sans-serif;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.65);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.4rem;
+  --shadow-soft: 0 24px 60px rgba(15, 23, 42, 0.12);
 
   --container-max: 1200px;
 }
@@ -43,17 +43,27 @@ body {
   min-height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   min-height: 100vh;
-  background: radial-gradient(circle at top, #020617 0, #020617 45%, #020617 100%);
   color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+
+  /* Fond Parlios light */
+  background-color: var(--bg);
+  background-image: url("/parlios-ui/sync-app-visual.png");
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed;
 }
 
 /* Liens */
 a {
-  color: var(--accent);
+  color: var(--accent-strong);
   text-decoration: none;
 }
 
@@ -65,14 +75,18 @@ a:hover {
 .app-shell {
   min-height: 100vh;
   display: flex;
-  background: radial-gradient(circle at top, #020617 0, #020617 45%, #020617 100%);
+  /* Transparent pour laisser le fond respirer */
+  background: transparent;
 }
 
 .app-shell__sidebar {
   width: 260px;
-  border-right: 1px solid var(--border-subtle);
-  padding: 1.5rem 1.25rem;
-  background: radial-gradient(circle at top left, #020617 0, #020617 45%, #020617 100%);
+  padding: 1.75rem 1.5rem;
+  border-right: 1px solid rgba(226, 232, 240, 0.9);
+
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.9));
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.14);
 }
 
 .app-shell__main {
@@ -81,39 +95,44 @@ a:hover {
   flex-direction: column;
 }
 
+/* Topbar */
 .app-shell__topbar {
-  height: 56px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.75rem;
-  border-bottom: 1px solid var(--border-subtle);
-  backdrop-filter: blur(16px);
+  padding: 0 2rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+
   background: linear-gradient(
-    to right,
-    rgba(15, 23, 42, 0.9),
-    rgba(15, 23, 42, 0.75)
+    to bottom,
+    rgba(255, 255, 255, 0.96),
+    rgba(248, 250, 252, 0.96)
   );
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
 .app-shell__content {
   flex: 1;
-  padding: 1.75rem;
+  padding: 2rem;
   max-width: var(--container-max);
   margin: 0 auto;
 }
 
-/* Cartes */
+/* Cartes – style neumorph light */
 .card {
-  background: radial-gradient(circle at top left, #020617 0, #020617 45%, #020617 100%);
+  background: radial-gradient(circle at top left, #ffffff, #f9fafb);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-soft);
-  padding: 1.5rem;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow:
+    0 22px 50px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.7);
+  padding: 1.75rem;
 }
 
 .card--soft {
-  background: radial-gradient(circle at top left, #020617 0, #020617 30%, #020617 100%);
+  background: linear-gradient(145deg, #f9fafb, #ffffff);
 }
 
 /* Titres */
@@ -123,14 +142,15 @@ h3,
 h4 {
   margin: 0 0 0.75rem 0;
   font-weight: 600;
+  color: var(--fg);
 }
 
 h1 {
-  font-size: 1.6rem;
+  font-size: 1.7rem;
 }
 
 h2 {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
 }
 
 /* Texte secondaire */
@@ -145,34 +165,45 @@ h2 {
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.55rem 1rem;
+  padding: 0.6rem 1.15rem;
   border-radius: 999px;
   border: 1px solid transparent;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.15s ease-out;
+  white-space: nowrap;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: white;
-  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.45);
+  background-image: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #ffffff;
+  box-shadow:
+    0 14px 32px rgba(37, 99, 235, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 35px rgba(79, 70, 229, 0.65);
+  box-shadow:
+    0 18px 45px rgba(37, 99, 235, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.8);
 }
 
 .btn-ghost {
-  background: rgba(15, 23, 42, 0.6);
-  border-color: var(--border-subtle);
-  color: var(--fg-muted);
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(209, 213, 219, 0.9);
+  color: #374151;
+  box-shadow:
+    0 8px 20px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 
 .btn-ghost:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-strong);
+  box-shadow:
+    0 10px 26px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.85);
 }
 
 /* Badges */
@@ -180,18 +211,19 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.15rem 0.6rem;
+  padding: 0.18rem 0.7rem;
   border-radius: 999px;
   font-size: 0.75rem;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.9);
   color: var(--fg-muted);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
 }
 
 .badge-pill {
-  background: var(--accent-soft);
-  border-color: rgba(99, 102, 241, 0.45);
-  color: var(--accent);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.06), rgba(99, 102, 241, 0.08));
+  border-color: rgba(129, 140, 248, 0.6);
+  color: var(--accent-strong);
 }
 
 /* Layout helpers */
@@ -209,9 +241,4 @@ h2 {
 
 .row--spread {
   justify-content: space-between;
-}
-
-/* Scroll doux */
-html {
-  scroll-behavior: smooth;
 }
