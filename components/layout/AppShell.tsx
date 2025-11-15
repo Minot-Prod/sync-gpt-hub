@@ -1,10 +1,21 @@
 ﻿import * as React from "react";
+import Link from "next/link";
 
 interface AppShellProps {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
 }
+
+const navItems = [
+  { label: "Dashboard", href: "/" },
+  { label: "Prospection", href: "/prospection" },
+  { label: "Messages", href: "/messages" },
+  { label: "Analyse", href: "/analyse" },
+  { label: "Radar", href: "/radar" },
+  { label: "Assistant", href: "/assistant" },
+  { label: "Coach", href: "/coach" },
+];
 
 export function AppShell({ title, subtitle, children }: AppShellProps) {
   return (
@@ -19,11 +30,13 @@ export function AppShell({ title, subtitle, children }: AppShellProps) {
           <nav className="stack">
             <span className="text-muted">Navigation</span>
             <ul className="stack" style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              <li className="text-muted">• Dashboard</li>
-              <li className="text-muted">• Prospection</li>
-              <li className="text-muted">• Messages</li>
-              <li className="text-muted">• Analyse</li>
-              <li className="text-muted">• Radar</li>
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-muted">
+                    • {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
