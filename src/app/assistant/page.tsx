@@ -1,298 +1,179 @@
 ﻿"use client";
 
 import * as React from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { AppShell } from "../../components/layout/AppShell";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { SectionHeader } from "../../components/ui/SectionHeader";
-import { syncAgents, type SyncAgentId } from "../../lib/agents-sync";
-import type { ChatMessage } from "../../lib/types";
 
-type UiMessage = ChatMessage & { id: string };
-
-const agentIds = Object.keys(syncAgents) as SyncAgentId[];
-
-function getInitialAgent(searchParams: URLSearchParams | null): SyncAgentId {
-  if (!searchParams) return "prospection";
-  const fromQuery = searchParams.get("agent") as SyncAgentId | null;
-  if (fromQuery && agentIds.includes(fromQuery)) {
-    return fromQuery;
-  }
-  return "prospection";
-}
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const [agentId, setAgentId] = React.useState<SyncAgentId>(() =>
-    getInitialAgent(searchParams)
-  );
-  const [messages, setMessages] = React.useState<UiMessage[]>([]);
-  const [input, setInput] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
-  const bottomRef = React.useRef<HTMLDivElement | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  React.useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  async function handleSend(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const text = input.trim();
+    if (!text) return;
 
-  React.useEffect(() => {
-    // Quand l'URL change (ex: navigation depuis /agents), on met l'agent à jour
-    setAgentId(getInitialAgent(searchParams));
-    setMessages([]);
-  }, [searchParams]);
+    const nextMessages: ChatMessage[] = [
+      ...messages,
+      { role: "user", content: text },
+    ];
 
-  async function handleSend(e: React.FormEvent) {
-    e.preventDefault();
-    const trimmed = input.trim();
-    if (!trimmed || isLoading) return;
-
-    const userMessage: UiMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content: trimmed,
-    };
-
-    const nextMessages = [...messages, userMessage];
     setMessages(nextMessages);
     setInput("");
-    setIsLoading(true);
+    setLoading(true);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agent: agentId,
-          messages: nextMessages.map(({ role, content }) => ({
-            role,
-            content,
-          })),
-        }),
+        body: JSON.stringify({ messages: nextMessages }),
       });
 
       if (!res.ok) {
-        throw new Error("Erreur API Hub");
+        throw new Error("Erreur API");
       }
 
-      const data = (await res.json()) as { answer?: string };
-      const answerText = data.answer ?? "Pas de réponse reçue depuis le Hub.";
+      const data = await res.json();
 
-      const assistantMessage: UiMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: answerText,
-      };
+      const reply =
+        data?.message ??
+        data?.reply ??
+        data?.content ??
+        data?.choices?.[0]?.message?.content ??
+        "[Assistant] Réponse reçue, mais format inattendu. Vérifie le format JSON retourné par /api/chat.";
 
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (err) {
-      console.error(err);
-      const errorMessage: UiMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content:
-          "Erreur côté Hub ou OpenAI. Vérifie OPENAI_API_KEY dans .env.local et réessaie.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages([
+        ...nextMessages,
+        { role: "assistant", content: String(reply) },
+      ]);
+    } catch (error) {
+      setMessages([
+        ...nextMessages,
+        {
+          role: "assistant",
+          content:
+            "Je n’ai pas pu contacter l’API de Sync. Vérifie /api/chat ou les clés OpenAI côté backend.",
+        },
+      ]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }
 
-  const agentOptions = Object.values(syncAgents);
-  const currentAgent = syncAgents[agentId];
-
   return (
     <AppShell
-      title="Assistant Sync – GPT connecté"
-      subtitle="Pose une question à un agent IA de Sync. Le back /api/chat appelle directement l’API GPT."
+      title="Assistant GPT Sync"
+      subtitle="Pose une question, l’assistant se charge d’orchestrer les agents et les prompts."
     >
       <div className="stack" style={{ gap: "1.5rem" }}>
-        <section className="stack" style={{ gap: "1rem" }}>
+        {/* Historique de conversation */}
+        <section>
           <SectionHeader
-            title="Assistant IA"
-            subtitle="Choisis un agent, discute avec lui et récupère une réponse pilotée par l’API GPT."
-            rightSlot={
-              <select
-                value={agentId}
-                onChange={(e) => setAgentId(e.target.value as SyncAgentId)}
-                style={{
-                  background: "rgba(15,23,42,0.8)",
-                  borderRadius: "999px",
-                  border: "1px solid var(--border-subtle)",
-                  color: "var(--fg)",
-                  padding: "0.35rem 0.9rem",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {agentOptions.map((agent) => (
-                  <option key={agent.id} value={agent.id}>
-                    {agent.name}
-                  </option>
-                ))}
-              </select>
-            }
+            title="Conversation"
+            subtitle="Historique des échanges avec l’assistant."
           />
-        </section>
-
-        <section
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 2.2fr) minmax(0, 1.3fr)",
-            gap: "1.5rem",
-          }}
-        >
-          {/* Chat */}
           <Card>
-            <div className="stack" style={{ gap: "1rem", height: "560px" }}>
-              <div
-                className="stack"
-                style={{
-                  gap: "0.75rem",
-                  flex: 1,
-                  overflowY: "auto",
-                  paddingRight: "0.25rem",
-                }}
-              >
-                {messages.length === 0 ? (
-                  <p className="text-muted" style={{ fontSize: "0.9rem" }}>
-                    Commence par décrire ton contexte de vente, ton prospect ou
-                    ton message à retravailler. L’agent te posera ensuite des
-                    questions et répondra via l’API GPT.
-                  </p>
-                ) : (
-                  messages.map((m) => (
-                    <div
-                      key={m.id}
-                      className="row"
-                      style={{
-                        justifyContent:
-                          m.role === "user" ? "flex-end" : "flex-start",
-                      }}
-                    >
-                      <div
-                        style={{
-                          maxWidth: "70%",
-                          padding: "0.7rem 0.9rem",
-                          borderRadius:
-                            m.role === "user"
-                              ? "1rem 1rem 0.25rem 1rem"
-                              : "1rem 1rem 1rem 0.25rem",
-                          background:
-                            m.role === "user"
-                              ? "linear-gradient(135deg, var(--accent), var(--accent-strong))"
-                              : "rgba(15,23,42,0.9)",
-                          color: m.role === "user" ? "#ffffff" : "var(--fg)",
-                          fontSize: "0.9rem",
-                          lineHeight: 1.5,
-                          border:
-                            m.role === "assistant"
-                              ? "1px solid var(--border-subtle)"
-                              : "none",
-                        }}
-                      >
-                        {m.content}
-                      </div>
-                    </div>
-                  ))
-                )}
-                <div ref={bottomRef} />
-              </div>
+            <div
+              style={{
+                maxHeight: "420px",
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.75rem",
+              }}
+            >
+              {messages.length === 0 && (
+                <p className="text-muted" style={{ fontSize: "0.9rem" }}>
+                  Commence par une question du type : “Génère un script de call pour ce persona”
+                  ou “Analyse ce compte et propose une séquence”.
+                </p>
+              )}
 
-              <form onSubmit={handleSend} className="stack" style={{ gap: "0.5rem" }}>
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  rows={3}
-                  placeholder="Décris ton besoin : entreprise à analyser, message à écrire, séquence à préparer, etc."
+              {messages.map((m, idx) => (
+                <div
+                  key={idx}
                   style={{
-                    width: "100%",
-                    resize: "none",
-                    borderRadius: "0.75rem",
-                    border: "1px solid var(--border-subtle)",
-                    background: "rgba(15,23,42,0.9)",
-                    color: "var(--fg)",
-                    padding: "0.7rem 0.9rem",
-                    fontSize: "0.9rem",
-                    fontFamily: "inherit",
+                    alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+                    maxWidth: "72%",
                   }}
-                />
-                <div className="row row--spread">
-                  <span className="text-muted" style={{ fontSize: "0.8rem" }}>
-                    Agent sélectionné :{" "}
-                    <strong>{currentAgent?.name ?? "Inconnu"}</strong>
-                  </span>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    disabled={isLoading || !input.trim()}
+                >
+                  <div
+                    style={{
+                      padding: "0.7rem 1rem",
+                      borderRadius: 18,
+                      fontSize: "0.9rem",
+                      background:
+                        m.role === "user"
+                          ? "linear-gradient(135deg, var(--accent), var(--accent-strong))"
+                          : "rgba(255, 255, 255, 0.95)",
+                      color: m.role === "user" ? "#ffffff" : "#0f172a",
+                      boxShadow: "0 12px 30px rgba(15, 23, 42, 0.14)",
+                    }}
                   >
-                    {isLoading ? "Génération en cours..." : "Envoyer à l’agent GPT"}
-                  </Button>
+                    {m.content}
+                  </div>
                 </div>
-              </form>
-            </div>
-          </Card>
+              ))}
 
-          {/* Panneau contexte agent */}
-          <Card soft>
-            <div className="stack" style={{ gap: "0.75rem" }}>
-              <h2 style={{ fontSize: "1.1rem" }}>À propos de l’agent</h2>
-              {currentAgent && (
-                <>
-                  <div className="row" style={{ alignItems: "center", gap: "0.6rem" }}>
-                    <div
-                      style={{
-                        width: "38px",
-                        height: "38px",
-                        borderRadius: "999px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "1.3rem",
-                        background: "rgba(15, 23, 42, 0.9)",
-                        border: "1px solid rgba(148, 163, 184, 0.4)",
-                      }}
-                    >
-                      <span>{currentAgent.avatar}</span>
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 600 }}>{currentAgent.name}</div>
-                      <div className="text-muted" style={{ fontSize: "0.85rem" }}>
-                        {currentAgent.tagline}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-muted" style={{ fontSize: "0.85rem" }}>
-                    {currentAgent.role}
-                  </div>
-
-                  <div className="stack" style={{ gap: "0.35rem" }}>
-                    <span className="text-muted" style={{ fontSize: "0.8rem" }}>
-                      Exemples de requêtes :
-                    </span>
-                    <ul
-                      className="text-muted"
-                      style={{
-                        margin: 0,
-                        paddingLeft: "1.1rem",
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      {currentAgent.examples.slice(0, 3).map((ex) => (
-                        <li key={ex} style={{ marginBottom: "0.25rem" }}>
-                          {ex}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
+              {loading && (
+                <span className="text-muted" style={{ fontSize: "0.85rem" }}>
+                  L’assistant réfléchit…
+                </span>
               )}
             </div>
+          </Card>
+        </section>
+
+        {/* Zone d’entrée */}
+        <section>
+          <SectionHeader
+            title="Entrée"
+            subtitle="Formule ta demande le plus concrètement possible."
+          />
+          <Card soft>
+            <form
+              className="stack"
+              style={{ gap: "0.75rem" }}
+              onSubmit={handleSend}
+            >
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={4}
+                placeholder="Ex : Génère une séquence multi-canaux pour un DAF de PME déjà en contact avec Sync."
+                style={{
+                  width: "100%",
+                  resize: "vertical",
+                  borderRadius: 16,
+                  border: "1px solid rgba(209, 213, 219, 0.9)",
+                  padding: "0.75rem 0.9rem",
+                  fontFamily: "inherit",
+                  fontSize: "0.95rem",
+                }}
+              />
+
+              <div className="row row--spread">
+                <span className="text-muted" style={{ fontSize: "0.8rem" }}>
+                  L’assistant peut orchestrer les agents (prospection, scripts, coach, analyse).
+                </span>
+                <Button variant="primary" type="submit" disabled={loading}>
+                  {loading ? "En cours..." : "Envoyer à l’assistant"}
+                </Button>
+              </div>
+            </form>
           </Card>
         </section>
       </div>
     </AppShell>
   );
 }
+
