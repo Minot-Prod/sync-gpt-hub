@@ -8,8 +8,8 @@ import { AgentId, ChatMessage } from "@/lib/types";
 import { getAgentConfig } from "@/lib/agents";
 
 type ChatWindowProps = {
-  agentId?: AgentId; // nouveau: support agentId
-  agent?: AgentId;   // rétrocompat: support prop agent
+  agentId?: AgentId; // support agentId
+  agent?: AgentId;   // rétrocompat: prop agent
   title?: string;
   subtitle?: string;
   initialSystemMessage?: string;
@@ -38,6 +38,10 @@ export default function ChatWindow({
 
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -96,6 +100,23 @@ export default function ChatWindow({
     if (!bottomRef.current) return;
     bottomRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Appliquer le playbackRate à l'audio en cours
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate]);
+
+  // Cleanup audio à l'unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,6 +199,29 @@ export default function ChatWindow({
       return;
     }
 
+    // Si on reclique sur le même message => toggle pause / reprise
+    if (playingIndex === index && audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        try {
+          await audioRef.current.play();
+          setIsPlaying(true);
+        } catch (err) {
+          console.error("[TTS] Erreur lors de la reprise audio:", err);
+        }
+      }
+      return;
+    }
+
+    // Nouveau message ou changement de message => stop ancien audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+
     setPlayingIndex(index);
 
     try {
@@ -193,6 +237,7 @@ export default function ChatWindow({
       if (!res.ok) {
         console.error("[TTS] Erreur API TTS:", await res.text());
         setPlayingIndex(null);
+        setIsPlaying(false);
         return;
       }
 
@@ -201,20 +246,29 @@ export default function ChatWindow({
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
 
+      audio.playbackRate = playbackRate;
+      audioRef.current = audio;
+
       audio.onended = () => {
         URL.revokeObjectURL(url);
+        setIsPlaying(false);
         setPlayingIndex(null);
+        audioRef.current = null;
       };
 
       audio.onerror = () => {
         URL.revokeObjectURL(url);
+        setIsPlaying(false);
         setPlayingIndex(null);
+        audioRef.current = null;
       };
 
       await audio.play();
+      setIsPlaying(true);
     } catch (err) {
       console.error("[TTS] Erreur réseau:", err);
       setPlayingIndex(null);
+      setIsPlaying(false);
     }
   };
 
@@ -249,16 +303,31 @@ export default function ChatWindow({
           </div>
 
           {config?.voice && (
-            <div className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5">
-              <label className="flex cursor-pointer items-center gap-2 text-[0.7rem] text-slate-200">
-                <input
-                  type="checkbox"
-                  className="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-cyan-400"
-                  checked={voiceEnabled}
-                  onChange={(e) => setVoiceEnabled(e.target.checked)}
-                />
-                <span>Activer la voix de {titleText}</span>
-              </label>
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5">
+                <label className="flex cursor-pointer items-center gap-2 text-[0.7rem] text-slate-200">
+                  <input
+                    type="checkbox"
+                    className="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-cyan-400"
+                    checked={voiceEnabled}
+                    onChange={(e) => setVoiceEnabled(e.target.checked)}
+                  />
+                  <span>Activer la voix de {titleText}</span>
+                </label>
+              </div>
+              <div className="flex items-center gap-1 text-[0.65rem] text-slate-400">
+                <span>Vitesse</span>
+                <select
+                  className="rounded-md border border-slate-700 bg-slate-900 px-2 py-0.5 text-[0.65rem] text-slate-100"
+                  value={playbackRate}
+                  onChange={(e) => setPlaybackRate(Number(e.target.value))}
+                >
+                  <option value={0.75}>0.75x</option>
+                  <option value={1}>1x</option>
+                  <option value={1.25}>1.25x</option>
+                  <option value={1.5}>1.5x</option>
+                </select>
+              </div>
             </div>
           )}
         </div>
@@ -307,9 +376,8 @@ export default function ChatWindow({
             {messages.length === 0 && (
               <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-950/60 px-4 py-8 text-center text-xs text-slate-500">
                 <p>
-                  Commence la discussion en écrivant ton message ci-dessous
-                  ou en utilisant le bouton 🎙 pour parler à{" "}
-                  {titleText}.
+                  Commence la discussion en écrivant ton message ci-dessous ou
+                  en utilisant le bouton 🎙 pour parler à {titleText}.
                 </p>
               </div>
             )}
@@ -368,13 +436,13 @@ export default function ChatWindow({
                               onClick={() =>
                                 playVoiceForMessage(idx, m.content)
                               }
-                              disabled={
-                                !voiceEnabled || playingIndex === idx
-                              }
+                              disabled={!voiceEnabled}
                               className="mt-2 inline-flex items-center gap-1 rounded-full border border-slate-600 bg-slate-900 px-2 py-1 text-[0.65rem] text-slate-200 disabled:opacity-50"
                             >
-                              {playingIndex === idx
-                                ? "🔊 Lecture en cours…"
+                              {playingIndex === idx && isPlaying
+                                ? "⏸️ Pause"
+                                : playingIndex === idx && !isPlaying
+                                ? "▶️ Reprendre"
                                 : "🔊 Écouter la réponse"}
                             </button>
                           )}
@@ -387,7 +455,9 @@ export default function ChatWindow({
             })}
 
             {loading && (
-              <p className="mt-1 text-xs text-slate-400">L’agent réfléchit…</p>
+              <p className="mt-1 text-xs text-slate-400">
+                L’agent réfléchit…
+              </p>
             )}
 
             <div ref={bottomRef} />
