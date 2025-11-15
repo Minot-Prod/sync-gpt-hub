@@ -1,156 +1,158 @@
-﻿// src/app/page.tsx
-"use client";
+﻿import * as React from "react";
+import { AppShell } from "../../components/layout/AppShell";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import { SectionHeader } from "../../components/ui/SectionHeader";
 
-import Link from "next/link";
-
-const cards = [
+const metrics = [
   {
-    href: "/prospection",
-    title: "📞 Léa – Prospection",
-    desc: "Ciblage, listes, angles d’approche pour lancer la machine commerciale.",
+    label: "Agents actifs",
+    value: "8",
+    hint: "Prospection, scripts, coaching, radar",
   },
   {
-    href: "/coach",
-    title: "🧠 Sam – Coach prospection",
-    desc: "Structurer ta semaine, tes routines et tes objectifs de prospection.",
+    label: "Playbooks en prod",
+    value: "14",
+    hint: "Sync Sales / Sync Hub / Messages",
   },
   {
-    href: "/analyse",
-    title: "📊 Alex – Analyse",
-    desc: "Analyser des sites / offres pour voir où Sync crée le plus de valeur.",
-  },
-  {
-    href: "/radar",
-    title: "📡 Zoé – Radar opportunités",
-    desc: "Idées d’usages, secteurs prometteurs, scénarios avant / après.",
-  },
-  {
-    href: "/messages",
-    title: "💬 Bibliothèque de messages",
-    desc: "Scripts, séquences et modèles produits par les agents.",
-  },
-  {
-    href: "/assistant",
-    title: "🤖 Console multi-agents",
-    desc: "Une interface unique pour parler directement aux agents GPT.",
+    label: "Séquences cette semaine",
+    value: "32",
+    hint: "Campagnes multi-agents",
   },
 ];
 
-export default function HomePage() {
-  return (
-    <main
-      style={{
-        minHeight: "100vh",
-        padding: "60px 20px",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        background: "#050816",
-        color: "#f9fafb",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "960px",
-          margin: "0 auto",
-        }}
-      >
-        <header style={{ textAlign: "center", marginBottom: "40px" }}>
-          <h1
-            style={{
-              fontSize: "40px",
-              fontWeight: 700,
-              marginBottom: "10px",
-            }}
-          >
-            🚀 Sync GPT Hub — Pro Ready
-          </h1>
-          <p
-            style={{
-              fontSize: "18px",
-              opacity: 0.9,
-              maxWidth: "640px",
-              margin: "0 auto",
-            }}
-          >
-            Hub multi-agents de vente pour Sync.{" "}
-            Le backend GPT tourne, tu peux maintenant piloter Léa, Nico, Alex, Sam
-            et Zoé via l’API ou la console front.
-          </p>
-        </header>
+const nextActions = [
+  {
+    title: "Prioriser les comptes chauds",
+    detail: "Analyser les signaux forts et classer les comptes à traiter aujourd’hui.",
+  },
+  {
+    title: "Optimiser les scripts d’ouverture",
+    detail: "Comparer les performances des messages d’accroche et tester une variante IA.",
+  },
+  {
+    title: "Passer en revue le radar d’opportunités",
+    detail: "Scanner les signaux LinkedIn / CRM et générer un plan d’attaque quotidien.",
+  },
+];
 
+const agents = [
+  { name: "Agent Prospection", status: "Actif", focus: "Cold email & LinkedIn" },
+  { name: "Agent Scripts Sync", status: "Actif", focus: "Scripts adaptés à chaque persona" },
+  { name: "Agent Coach", status: "Actif", focus: "Relecture et coaching des messages" },
+  { name: "Agent Analyse", status: "Bêta", focus: "Rapports et synthèses pour le board" },
+];
+
+export default function Page() {
+  return (
+    <AppShell
+      title="Dashboard Sync GPT Hub"
+      subtitle="Vue d’ensemble des agents, des playbooks et des actions de vente pilotées par l’IA."
+    >
+      <div className="stack" style={{ gap: "1.5rem" }}>
+        {/* Ligne de métriques */}
+        <section>
+          <SectionHeader
+            title="Vue globale"
+            subtitle="Résumé rapide de l’activité du hub."
+          />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "1rem",
+            }}
+          >
+            {metrics.map((metric) => (
+              <Card key={metric.label}>
+                <p className="text-muted" style={{ marginBottom: "0.35rem" }}>
+                  {metric.label}
+                </p>
+                <div
+                  style={{
+                    fontSize: "1.6rem",
+                    fontWeight: 600,
+                    marginBottom: "0.25rem",
+                  }}
+                >
+                  {metric.value}
+                </div>
+                <p className="text-muted" style={{ fontSize: "0.85rem" }}>
+                  {metric.hint}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* Agents & playbooks */}
         <section
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "20px",
+            gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1.4fr)",
+            gap: "1.5rem",
           }}
         >
-          {cards.map((card) => (
-            <Link
-              key={card.href}
-              href={card.href}
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <article
-                style={{
-                  borderRadius: "16px",
-                  border: "1px solid rgba(148, 163, 184, 0.3)",
-                  background:
-                    "linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,64,175,0.5))",
-                  padding: "18px 20px",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  boxShadow: "0 18px 40px rgba(15,23,42,0.7)",
-                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
-                }}
-              >
-                <h2
-                  style={{
-                    fontSize: "18px",
-                    marginBottom: "8px",
-                    fontWeight: 600,
-                  }}
-                >
-                  {card.title}
-                </h2>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    opacity: 0.95,
-                    marginBottom: "10px",
-                  }}
-                >
-                  {card.desc}
-                </p>
-                <span
-                  style={{
-                    fontSize: "13px",
-                    opacity: 0.8,
-                  }}
-                >
-                  ➜ Ouvrir
-                </span>
-              </article>
-            </Link>
-          ))}
-        </section>
+          <div className="stack" style={{ gap: "1rem" }}>
+            <SectionHeader
+              title="Agents & playbooks"
+              subtitle="Ce que le hub peut déclencher pour ton équipe."
+              rightSlot={
+                <Button variant="ghost">
+                  Voir tous les agents
+                </Button>
+              }
+            />
+            <Card soft>
+              <div className="stack" style={{ gap: "0.75rem" }}>
+                {agents.map((agent) => (
+                  <div
+                    key={agent.name}
+                    className="row row--spread"
+                    style={{ alignItems: "flex-start" }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 500 }}>{agent.name}</div>
+                      <div className="text-muted" style={{ fontSize: "0.85rem" }}>
+                        {agent.focus}
+                      </div>
+                    </div>
+                    <span className="badge badge-pill">
+                      {agent.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
 
-        <footer
-          style={{
-            marginTop: "40px",
-            textAlign: "center",
-            fontSize: "13px",
-            opacity: 0.6,
-          }}
-        >
-          Sync GPT Hub — mode labo activé.{" "}
-          Backend : <code>/api/chat</code> · <code>/api/tts</code>
-        </footer>
+          {/* Prochaines actions */}
+          <div className="stack" style={{ gap: "1rem" }}>
+            <SectionHeader
+              title="Prochaines actions"
+              subtitle="3 actions IA qui ont le plus d’impact business aujourd’hui."
+            />
+            <Card>
+              <div className="stack" style={{ gap: "0.75rem" }}>
+                {nextActions.map((action) => (
+                  <div key={action.title} className="stack">
+                    <div style={{ fontWeight: 500 }}>{action.title}</div>
+                    <div className="text-muted" style={{ fontSize: "0.85rem" }}>
+                      {action.detail}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: "1rem" }}>
+                <Button variant="primary">
+                  Lancer ces actions dans le hub
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </section>
       </div>
-    </main>
+    </AppShell>
   );
 }
