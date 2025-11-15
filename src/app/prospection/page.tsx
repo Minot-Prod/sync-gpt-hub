@@ -1,20 +1,26 @@
-import ChatWindow from "@/components/ChatWindow";
+ï»¿"use client";
+
+import React from "react";
 
 export default function ProspectionPage() {
   return (
-    <div className="h-[calc(100vh-150px)]">
-      <ChatWindow
-        title="Agent Prospection"
-        subtitle="Identifie, filtre et priorise les entreprises cibles pour Sync Productions en fonction du type d'événement, du marché et des objectifs."
-        agentId="prospection"
-        placeholder="Décris le type d'entreprises que tu veux cibler (secteur, taille, région...) ou colle une liste brute à nettoyer."
-        contextBadges={[
-          "Listes d'entreprises",
-          "Marchés & régions",
-          "Type d'événement",
-        ]}
-        toneBadge="Précis, orienté action"
-      />
-    </div>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "80px 20px",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ fontSize: "32px", marginBottom: "10px" }}>
+        ðŸ“ž Prospection (LÃ©a)
+      </h1>
+      <p style={{ fontSize: "18px", maxWidth: "700px", textAlign: "center" }}>
+        Page dÃ©diÃ©e au travail de LÃ©a : ciblage, listes, angles de contact, priorisation.
+      </p>
+    </main>
   );
 }

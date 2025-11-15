@@ -1,16 +1,26 @@
-import ChatWindow from "@/components/ChatWindow";
+Ôªø"use client";
+
+import React from "react";
 
 export default function MessagesPage() {
   return (
-    <div className="h-[calc(100vh-150px)]">
-      <ChatWindow
-        title="Agent Messages & Scripts"
-        subtitle="GÈnËre des messages LinkedIn, e-mails, scripts d'appels et relances alignÈs avec la culture Sync et ta faÁon de parler."
-        agentId="messages"
-        placeholder="Explique ton contexte (prospect, canal, objectif) ou colle un message brut ‡ amÈliorer."
-        contextBadges={["LinkedIn", "E-mails", "Scripts d'appel"]}
-        toneBadge="Naturel, humain, efficace"
-      />
-    </div>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "80px 20px",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ fontSize: "32px", marginBottom: "10px" }}>
+        üí¨ Biblioth√®que de messages
+      </h1>
+      <p style={{ fontSize: "18px", maxWidth: "700px", textAlign: "center" }}>
+        Cette page accueillera les scripts, s√©quences et mod√®les produits par les agents.
+      </p>
+    </main>
   );
 }

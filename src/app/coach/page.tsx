@@ -1,16 +1,26 @@
-import ChatWindow from "@/components/ChatWindow";
+ï»¿"use client";
+
+import React from "react";
 
 export default function CoachPage() {
   return (
-    <div className="h-[calc(100vh-150px)]">
-      <ChatWindow
-        title="Agent Coach & Training"
-        subtitle="Te pose les bonnes questions, challenge ta démarche commerciale et t'aide à installer le réflexe IA dans ton quotidien."
-        agentId="coach"
-        placeholder="Décris ta situation (pipeline, blocage, nouveau segment) ou demande un plan d'entraînement IA."
-        contextBadges={["Coaching ventes", "Habitudes IA", "Feedback"]}
-        toneBadge="Coach, bienveillant mais franc"
-      />
-    </div>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "80px 20px",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ fontSize: "32px", marginBottom: "10px" }}>
+        ðŸ§  Coach Prospection (Sam)
+      </h1>
+      <p style={{ fontSize: "18px", maxWidth: "700px", textAlign: "center" }}>
+        Ici tu pourras plus tard piloter lâ€™agent Sam pour structurer ta prospection.
+      </p>
+    </main>
   );
 }

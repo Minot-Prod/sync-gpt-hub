@@ -1,16 +1,26 @@
-import ChatWindow from "@/components/ChatWindow";
+ï»¿"use client";
+
+import React from "react";
 
 export default function AnalysePage() {
   return (
-    <div className="h-[calc(100vh-150px)]">
-      <ChatWindow
-        title="Agent Analyse Client"
-        subtitle="Analyse une entreprise, ses valeurs, son historique d'événements et ses enjeux pour proposer des angles d'approche pertinents."
-        agentId="analyse"
-        placeholder="Colle l'URL d'un site, des notes sur un client ou une description d'entreprise à analyser."
-        contextBadges={["Site web client", "Notes terrain", "Historique"]}        
-        toneBadge="Structuré, orienté insight"
-      />
-    </div>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "80px 20px",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ fontSize: "32px", marginBottom: "10px" }}>
+        ðŸ”Ž Analyse Sync GPT Hub
+      </h1>
+      <p style={{ fontSize: "18px", maxWidth: "700px", textAlign: "center" }}>
+        Cette page servira plus tard Ã  piloter lâ€™agent dâ€™analyse (Alex) dans Sync GPT Hub.
+      </p>
+    </main>
   );
 }

@@ -1,16 +1,26 @@
-import ChatWindow from "@/components/ChatWindow";
+ï»¿"use client";
+
+import React from "react";
 
 export default function RadarPage() {
   return (
-    <div className="h-[calc(100vh-150px)]">
-      <ChatWindow
-        title="Agent Radar Opportunités"
-        subtitle="Repère des signaux d'affaires, événements récurrents et nouvelles opportunités dans ton portefeuille ou un secteur donné."
-        agentId="radar"
-        placeholder="Décris ton portefeuille, un secteur ou colle des infos clients pour détecter des opportunités."
-        contextBadges={["Signaux faibles", "Opportunités", "Portefeuille"]}
-        toneBadge="Explorateur, pragmatique"
-      />
-    </div>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "80px 20px",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <h1 style={{ fontSize: "32px", marginBottom: "10px" }}>
+        ğŸ“¡ Radar opportunitÃ©s (ZoÃ©)
+      </h1>
+      <p style={{ fontSize: "18px", maxWidth: "700px", textAlign: "center" }}>
+        Ici, ZoÃ© mettra en forme les idÃ©es dâ€™usage, scÃ©narios avant/aprÃ¨s et radars de secteurs.
+      </p>
+    </main>
   );
 }
