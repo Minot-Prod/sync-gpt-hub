@@ -1,4 +1,4 @@
-﻿import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 type AgentCardProps = {
@@ -7,7 +7,7 @@ type AgentCardProps = {
   tagline: string;
   emoji: string;
   role: string;
-  examples?: string[];
+  examples: string[];
 };
 
 export function AgentCard({
@@ -16,7 +16,7 @@ export function AgentCard({
   tagline,
   emoji,
   role,
-  examples = [],
+  examples,
 }: AgentCardProps) {
   return (
     <Link
@@ -29,37 +29,37 @@ export function AgentCard({
             {emoji}
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-slate-50">{name}</span>
-            <span className="text-xs text-slate-400">{tagline}</span>
+            <span className="text-sm font-semibold text-slate-50">
+              {name}
+            </span>
+            <span className="text-xs text-slate-400">
+              {tagline}
+            </span>
           </div>
         </div>
-
         <span className="rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-300">
           {role}
         </span>
       </div>
 
-      {examples.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {examples.slice(0, 3).map((ex, i) => (
-            <button
-              key={i}
-              type="button"
-              className="max-w-full truncate rounded-full bg-slate-900/80 px-3 py-1 text-xs text-slate-300 ring-1 ring-slate-800 transition group-hover:bg-slate-900 group-hover:text-slate-100"
-            >
-              {ex}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {examples.slice(0, 3).map((ex, i) => (
+          <button
+            key={i}
+            type="button"
+            className="max-w-full truncate rounded-full bg-slate-900/80 px-3 py-1 text-xs text-slate-300 ring-1 ring-slate-800 transition group-hover:bg-slate-900 group-hover:text-slate-100"
+          >
+            {ex}
+          </button>
+        ))}
+      </div>
 
       <div className="mt-4 flex items-center justify-between text-xs text-cyan-400">
         <span className="flex items-center gap-1">
-          Ouvrir l’agent
+          Ouvrir l�agent
           <ChevronRight className="h-3 w-3 transition group-hover:translate-x-0.5" />
         </span>
       </div>
     </Link>
   );
 }
-
