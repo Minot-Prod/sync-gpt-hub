@@ -1,8 +1,8 @@
 ﻿import * as React from "react";
-import { AppShell } from "../../components/layout/AppShell";
-import { Card } from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
-import { SectionHeader } from "../../components/ui/SectionHeader";
+import { AppShell } from "../components/layout/AppShell";
+import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import { SectionHeader } from "../components/ui/SectionHeader";
 
 const metrics = [
   {
@@ -156,3 +156,5 @@ export default function Page() {
     </AppShell>
   );
 }
+
+
