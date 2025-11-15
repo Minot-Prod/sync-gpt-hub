@@ -1,4 +1,5 @@
 ﻿import * as React from "react";
+import Link from "next/link";
 import { AppShell } from "../../components/layout/AppShell";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
@@ -79,9 +80,11 @@ export default function Page() {
                   </div>
 
                   <div style={{ marginTop: "0.5rem" }}>
-                    <Button variant="ghost">
-                      Ouvrir l’agent {agent.id}
-                    </Button>
+                    <Link href={`/assistant?agent=${agent.id}`}>
+                      <Button variant="ghost">
+                        Ouvrir l’agent {agent.id}
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </Card>
@@ -92,6 +95,3 @@ export default function Page() {
     </AppShell>
   );
 }
-
-
-
