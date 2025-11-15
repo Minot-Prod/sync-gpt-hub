@@ -42,3 +42,7 @@ next-env.d.ts
 
 # Local Netlify folder
 .netlify
+
+sync-gpt-hub/
+
+test-sync-agent.ps1
