@@ -1,223 +1,251 @@
 ﻿"use client";
 
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { AgentId, ChatMessage } from "@/lib/types";
+import { AgentId, ChatMessage } from "@/lib/types";
 import { getAgentConfig } from "@/lib/agents";
 
-type Props = {
-  agent: AgentId;
-  title: string;
-  subtitle?: string;
+type ChatWindowProps = {
+  agentId: AgentId;
+  initialSystemMessage?: string;
   initialSystemHint?: string;
+  placeholder?: string;
 };
 
 export default function ChatWindow({
-  agent,
-  title,
-  subtitle,
-  initialSystemHint,
-}: Props) {
+  agentId,
+  initialSystemMessage,
+  initialSystemHint: initialSystemHintProp,
+  placeholder,
+}: ChatWindowProps) {
+  const config = getAgentConfig(agentId);
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+
   const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<any | null>(null);
+
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const recognitionRef = useRef<any>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const config = getAgentConfig(agent);
-  const headingTitle = config?.name || title;
+  const initialSystemHint = initialSystemHintProp;
 
+  // Init SpeechRecognition
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (typeof window === "undefined") return;
+
+    const w = window as any;
+    const SpeechRecognition =
+      w.SpeechRecognition || w.webkitSpeechRecognition || null;
+
+    if (!SpeechRecognition) {
+      console.warn("SpeechRecognition non disponible dans ce navigateur.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript as string;
+      setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("[SpeechRecognition] Erreur :", event);
+      setListening(false);
+    };
+
+    recognitionRef.current = recognition;
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
+
+  // Auto-scroll vers le bas à chaque nouveau message
+  useEffect(() => {
+    if (!bottomRef.current) return;
+    bottomRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  async function handleSend(e: FormEvent) {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    const userMsg: ChatMessage = { role: "user", content: trimmed };
-    const nextMessages = [...messages, userMsg];
+    const userMessage: ChatMessage = {
+      role: "user",
+      content: trimmed,
+    };
 
-    setMessages(nextMessages);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput("");
     setLoading(true);
+
+    const payloadMessages: ChatMessage[] = initialSystemMessage
+      ? [{ role: "system", content: initialSystemMessage }, ...newMessages]
+      : newMessages;
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agent, messages: nextMessages }),
-      });
-
-      if (!res.ok) throw new Error(`Erreur API (${res.status})`);
-
-      const data = await res.json();
-      const assistantMsg: ChatMessage = {
-        role: "assistant",
-        content: data.answer ?? "",
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
-    } catch (err) {
-      const assistantMsg: ChatMessage = {
-        role: "assistant",
-        content:
-          "Erreur côté Hub. Vérifie la configuration (clé OpenAI) ou réessaie dans quelques secondes.",
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleExampleClick(example: string) {
-    setInput(example);
-  }
-
-  function toggleVoiceInput() {
-    if (typeof window === "undefined") return;
-
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert(
-        "La dictée vocale n’est pas supportée par ce navigateur. Essaie avec Chrome ou Edge."
-      );
-      return;
-    }
-
-    if (!listening) {
-      const recognition = new SpeechRecognition();
-      recognition.lang = "fr-FR";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results?.[0]?.[0]?.transcript;
-        if (transcript) {
-          setInput((prev) => (prev ? prev + " " + transcript : transcript));
-        }
-      };
-
-      recognition.onend = () => {
-        setListening(false);
-      };
-
-      recognition.onerror = () => {
-        setListening(false);
-      };
-
-      recognitionRef.current = recognition;
-      setListening(true);
-      recognition.start();
-    } else {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      setListening(false);
-    }
-  }
-
-  async function playVoiceForMessage(index: number, text: string) {
-    try {
-      if (!voiceEnabled) return;
-      if (!config?.voice) return;
-
-      setPlayingIndex(index);
-
-      const res = await fetch("/api/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, agentId: agent }),
+        body: JSON.stringify({
+          agent: agentId,
+          messages: payloadMessages,
+        }),
       });
 
       if (!res.ok) {
-        console.error("TTS error", await res.text());
+        console.error("[Chat] Erreur API chat:", await res.text());
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      const answer = (data?.answer as string) ?? "";
+
+      const assistantMessage: ChatMessage = {
+        role: "assistant",
+        content: answer,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (err) {
+      console.error("[Chat] Erreur réseau:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExampleClick = (example: string) => {
+    setInput(example);
+  };
+
+  const toggleVoiceInput = () => {
+    const recognition = recognitionRef.current;
+    if (!recognition) {
+      console.warn("SpeechRecognition non initialisé.");
+      return;
+    }
+
+    if (listening) {
+      recognition.stop();
+      setListening(false);
+    } else {
+      try {
+        recognition.start();
+        setListening(true);
+      } catch (err) {
+        console.error("[SpeechRecognition] start() error:", err);
+      }
+    }
+  };
+
+  const playVoiceForMessage = async (index: number, content: string) => {
+    if (!voiceEnabled) {
+      console.warn("[TTS] Voix désactivée pour cet agent.");
+      return;
+    }
+
+    setPlayingIndex(index);
+
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: content,
+          agentId,
+        }),
+      });
+
+      if (!res.ok) {
+        console.error("[TTS] Erreur API TTS:", await res.text());
         setPlayingIndex(null);
         return;
       }
 
-      const blob = await res.blob();
+      const arrayBuffer = await res.arrayBuffer();
+      const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
       const url = URL.createObjectURL(blob);
-
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-      }
-
       const audio = new Audio(url);
-      audioRef.current = audio;
 
       audio.onended = () => {
-        setPlayingIndex(null);
         URL.revokeObjectURL(url);
+        setPlayingIndex(null);
       };
 
       audio.onerror = () => {
-        setPlayingIndex(null);
         URL.revokeObjectURL(url);
+        setPlayingIndex(null);
       };
 
       await audio.play();
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error("[TTS] Erreur réseau:", err);
       setPlayingIndex(null);
     }
-  }
+  };
 
-  const placeholder =
-    config?.name != null
-      ? `Écris ici ton message pour ${config.name}…`
-      : "Écris ici ton message pour l’agent…";
+  const placeholderText =
+    placeholder ??
+    `Pose ta question à ${config?.name ?? "l’agent"}…`;
 
   return (
-    <div className="space-y-4">
-      {/* EN-TÊTE AGENT */}
-      <header className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-        <div className="flex items-center justify-between gap-3">
+    <div className="flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-950/80 p-4 text-slate-100 shadow-xl">
+      {/* HEADER */}
+      <header className="space-y-2">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-xl">
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-slate-800 text-lg">
               {config?.avatarSrc ? (
                 <Image
                   src={config.avatarSrc}
-                  alt={config.name}
-                  width={48}
-                  height={48}
-                  className="h-12 w-12 object-cover"
+                  alt={config?.name}
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 object-cover"
                 />
               ) : (
                 <span>{config?.avatar ?? "🤖"}</span>
               )}
             </div>
             <div>
-              <h1 className="text-lg font-semibold tracking-tight">
-                {headingTitle}
-              </h1>
-              {config?.tagline && (
-                <p className="text-xs text-slate-300">{config.tagline}</p>
-              )}
-              {subtitle && (
-                <p className="text-xs text-slate-400">{subtitle}</p>
-              )}
+              <h2 className="text-sm font-semibold text-slate-50">
+                {config?.name ?? "Agent IA Sync"}
+              </h2>
+              <p className="text-xs text-slate-400">
+                {config?.tagline ?? "Assistant IA personnalisé pour Sync."}
+              </p>
             </div>
           </div>
 
           {config?.voice && (
-            <div className="flex items-center gap-2">
-              <label className="flex items-center gap-2 text-[0.7rem] text-slate-400">
+            <div className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1.5">
+              <label className="flex cursor-pointer items-center gap-2 text-[0.7rem] text-slate-200">
                 <input
                   type="checkbox"
-                  className="h-3 w-3 rounded border-slate-600 bg-slate-900"
+                  className="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900 text-cyan-400"
                   checked={voiceEnabled}
                   onChange={(e) => setVoiceEnabled(e.target.checked)}
                 />
@@ -333,7 +361,9 @@ export default function ChatWindow({
                               onClick={() =>
                                 playVoiceForMessage(idx, m.content)
                               }
-                              disabled={!voiceEnabled || playingIndex === idx}
+                              disabled={
+                                !voiceEnabled || playingIndex === idx
+                              }
                               className="mt-2 inline-flex items-center gap-1 rounded-full border border-slate-600 bg-slate-900 px-2 py-1 text-[0.65rem] text-slate-200 disabled:opacity-50"
                             >
                               {playingIndex === idx
@@ -374,7 +404,7 @@ export default function ChatWindow({
             <input
               type="text"
               className="flex-1 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-cyan-400"
-              placeholder={placeholder}
+              placeholder={placeholderText}
               value={input}
               onChange={(e) => setInput(e.target.value)}
             />
