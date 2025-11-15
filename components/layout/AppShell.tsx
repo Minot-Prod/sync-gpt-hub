@@ -8,13 +8,14 @@ interface AppShellProps {
 }
 
 const navItems = [
-  { label: "Dashboard", href: "/" },
-  { label: "Prospection", href: "/prospection" },
-  { label: "Messages", href: "/messages" },
-  { label: "Analyse", href: "/analyse" },
-  { label: "Radar", href: "/radar" },
-  { label: "Assistant", href: "/assistant" },
-  { label: "Coach", href: "/coach" },
+  { href: "/", label: "Dashboard" },
+  { href: "/agents", label: "Agents" },
+  { href: "/prospection", label: "Prospection" },
+  { href: "/messages", label: "Messages" },
+  { href: "/analyse", label: "Analyse" },
+  { href: "/radar", label: "Radar" },
+  { href: "/assistant", label: "Assistant" },
+  { href: "/coach", label: "Coach" },
 ];
 
 export function AppShell({ title, subtitle, children }: AppShellProps) {
@@ -32,8 +33,18 @@ export function AppShell({ title, subtitle, children }: AppShellProps) {
             <ul className="stack" style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {navItems.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-muted">
-                    • {item.label}
+                  <Link
+                    href={item.href}
+                    className="text-muted"
+                    style={{
+                      fontSize: "0.9rem",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.35rem",
+                    }}
+                  >
+                    <span>•</span>
+                    <span>{item.label}</span>
                   </Link>
                 </li>
               ))}
