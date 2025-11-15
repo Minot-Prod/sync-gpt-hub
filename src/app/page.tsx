@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
+import Link from "next/link";
 import { AppShell } from "../components/layout/AppShell";
 import { Card } from "../components/ui/Card";
-import { Button } from "../components/ui/Button";
 import { SectionHeader } from "../components/ui/SectionHeader";
 
 const metrics = [
@@ -25,23 +25,38 @@ const metrics = [
 const nextActions = [
   {
     title: "Prioriser les comptes chauds",
-    detail: "Analyser les signaux forts et classer les comptes à traiter aujourd’hui.",
+    detail:
+      "Analyser les signaux forts et classer les comptes à traiter aujourd’hui.",
   },
   {
     title: "Optimiser les scripts d’ouverture",
-    detail: "Comparer les performances des messages d’accroche et tester une variante IA.",
+    detail:
+      "Comparer les performances des messages d’accroche et tester une variante IA.",
   },
   {
     title: "Passer en revue le radar d’opportunités",
-    detail: "Scanner les signaux LinkedIn / CRM et générer un plan d’attaque quotidien.",
+    detail:
+      "Scanner les signaux LinkedIn / CRM et générer un plan d’attaque quotidien.",
   },
 ];
 
 const agents = [
   { name: "Agent Prospection", status: "Actif", focus: "Cold email & LinkedIn" },
-  { name: "Agent Scripts Sync", status: "Actif", focus: "Scripts adaptés à chaque persona" },
-  { name: "Agent Coach", status: "Actif", focus: "Relecture et coaching des messages" },
-  { name: "Agent Analyse", status: "Bêta", focus: "Rapports et synthèses pour le board" },
+  {
+    name: "Agent Scripts Sync",
+    status: "Actif",
+    focus: "Scripts adaptés à chaque persona",
+  },
+  {
+    name: "Agent Coach",
+    status: "Actif",
+    focus: "Relecture et coaching des messages",
+  },
+  {
+    name: "Agent Analyse",
+    status: "Bêta",
+    focus: "Rapports et synthèses pour le board",
+  },
 ];
 
 export default function Page() {
@@ -99,12 +114,12 @@ export default function Page() {
               title="Agents & playbooks"
               subtitle="Ce que le hub peut déclencher pour ton équipe."
               rightSlot={
-                <Button variant="ghost">
+                <Link href="/agents" className="btn btn-ghost">
                   Voir tous les agents
-                </Button>
+                </Link>
               }
             />
-            <Card soft>
+            <Card>
               <div className="stack" style={{ gap: "0.75rem" }}>
                 {agents.map((agent) => (
                   <div
@@ -114,13 +129,14 @@ export default function Page() {
                   >
                     <div>
                       <div style={{ fontWeight: 500 }}>{agent.name}</div>
-                      <div className="text-muted" style={{ fontSize: "0.85rem" }}>
+                      <div
+                        className="text-muted"
+                        style={{ fontSize: "0.85rem" }}
+                      >
                         {agent.focus}
                       </div>
                     </div>
-                    <span className="badge badge-pill">
-                      {agent.status}
-                    </span>
+                    <span className="badge badge-pill">{agent.status}</span>
                   </div>
                 ))}
               </div>
@@ -138,16 +154,22 @@ export default function Page() {
                 {nextActions.map((action) => (
                   <div key={action.title} className="stack">
                     <div style={{ fontWeight: 500 }}>{action.title}</div>
-                    <div className="text-muted" style={{ fontSize: "0.85rem" }}>
+                    <div
+                      className="text-muted"
+                      style={{ fontSize: "0.85rem" }}
+                    >
                       {action.detail}
                     </div>
                   </div>
                 ))}
               </div>
               <div style={{ marginTop: "1rem" }}>
-                <Button variant="primary">
-                  Lancer ces actions dans le hub
-                </Button>
+                <Link
+                  href="/assistant?agent=prospection"
+                  className="btn btn-primary"
+                >
+                  Ouvrir l’Assistant Sync (Prospection)
+                </Link>
               </div>
             </Card>
           </div>
@@ -156,5 +178,3 @@ export default function Page() {
     </AppShell>
   );
 }
-
-
